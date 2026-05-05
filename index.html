@@ -451,15 +451,29 @@
                             <table class="w-full text-left border-collapse min-w-[600px]">
                                 <thead class="bg-brand-900 text-white text-[11px] uppercase tracking-widest border-b border-brand-800">
                                     <tr>
-                                        <th class="p-4 font-bold text-center w-16 border-r border-brand-800">ลำดับ</th>
-                                        <th class="p-4 font-bold border-r border-brand-800">พื้นที่รับผิดชอบ</th>
-                                        <th class="p-4 font-bold text-center border-r border-brand-800" id="th-dash-acc">การเกิด (ครั้ง)</th>
-                                        <th class="p-4 font-bold text-center text-red-300 border-r border-brand-800" id="th-dash-dead">เสียชีวิต (ราย)</th>
-                                        <th class="p-4 font-bold text-center text-orange-300 border-r border-brand-800" id="th-dash-inj">บาดเจ็บ (คน)</th>
-                                        <th class="p-4 font-bold text-center text-red-200 border-r border-brand-800" id="th-dash-major">อุบัติเหตุใหญ่ (ครั้ง)</th>
-                                        <th class="p-4 font-bold text-center border-r border-brand-800" id="th-dash-target">เป้าหมาย<br><span class="text-[9px] font-normal text-brand-200">(-5% จาก 3 ปี)</span></th>
-                                        <th class="p-4 font-bold text-center text-emerald-300" id="th-dash-trend">แนวโน้ม (%)</th>
-                                    </tr>
+    <th class="p-4 font-bold text-center w-16 border-r border-brand-800">ลำดับ</th>
+    <th class="p-4 font-bold border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('province')">
+        <div class="flex items-center justify-between gap-1">พื้นที่รับผิดชอบ <span id="sort-icon-province" class="material-symbols-rounded text-[14px] text-brand-400 opacity-0">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('acc')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-acc">การเกิด (ครั้ง)</span> <span id="sort-icon-acc" class="material-symbols-rounded text-[14px] text-brand-400">arrow_downward</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-red-300 border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('dead')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-dead">เสียชีวิต (ราย)</span> <span id="sort-icon-dead" class="material-symbols-rounded text-[14px] text-red-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-orange-300 border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('inj')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-inj">บาดเจ็บ (คน)</span> <span id="sort-icon-inj" class="material-symbols-rounded text-[14px] text-orange-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-red-200 border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('major')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-major">อุบัติเหตุใหญ่ (ครั้ง)</span> <span id="sort-icon-major" class="material-symbols-rounded text-[14px] text-red-300 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="ViewRenderers.handleDashSort('target')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-target">เป้าหมาย<br><span class="text-[9px] font-normal text-brand-200">(-5% จาก 3 ปี)</span></span> <span id="sort-icon-target" class="material-symbols-rounded text-[14px] text-brand-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-emerald-300 cursor-pointer hover:bg-brand-800 transition-colors" id="th-dash-trend" onclick="ViewRenderers.handleDashSort('trend')">
+        <div class="flex items-center justify-center gap-1"><span id="th-dash-trend-txt">แนวโน้ม (%)</span> <span id="sort-icon-trend" class="material-symbols-rounded text-[14px] text-emerald-400 opacity-50">sort</span></div>
+    </th>
+</tr>
                                 </thead>
                                 <tbody id="dash-table-body" class="text-sm divide-y divide-surface-100">
                                     <tr><td colspan="8" class="p-4"><div class="skeleton h-8 w-full rounded"></div></td></tr>
@@ -574,13 +588,21 @@
                         <table class="w-full text-left border-collapse min-w-[700px]">
                             <thead class="bg-brand-900 text-white text-[11px] uppercase tracking-widest border-b border-brand-800 sticky top-0 z-10">
                                 <tr>
-                                    <th class="p-4 font-bold text-center w-16 border-r border-brand-800">อันดับ</th>
-                                    <th class="p-4 font-bold border-r border-brand-800" id="th-rank-name">รายการ</th>
-                                    <th class="p-4 font-bold text-center border-r border-brand-800">เกิด (ครั้ง)</th>
-                                    <th class="p-4 font-bold text-center text-red-300 border-r border-brand-800">เสียชีวิต (ราย)</th>
-                                    <th class="p-4 font-bold text-center text-orange-300 border-r border-brand-800">บาดเจ็บ (คน)</th>
-                                    <th class="p-4 font-bold text-center text-brand-200">% สัดส่วนการเกิดเหตุ</th>
-                                </tr>
+    <th class="p-4 font-bold text-center w-16 border-r border-brand-800">อันดับ</th>
+    <th class="p-4 font-bold border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="RankingController.handleSort('name')">
+        <div class="flex items-center justify-between gap-1"><span id="th-rank-name">รายการ</span> <span id="sort-rank-name" class="material-symbols-rounded text-[14px] text-brand-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="RankingController.handleSort('acc')">
+        <div class="flex items-center justify-center gap-1">เกิด (ครั้ง) <span id="sort-rank-acc" class="material-symbols-rounded text-[14px] text-brand-400">arrow_downward</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-red-300 border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="RankingController.handleSort('dead')">
+        <div class="flex items-center justify-center gap-1">เสียชีวิต (ราย) <span id="sort-rank-dead" class="material-symbols-rounded text-[14px] text-red-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-orange-300 border-r border-brand-800 cursor-pointer hover:bg-brand-800 transition-colors" onclick="RankingController.handleSort('inj')">
+        <div class="flex items-center justify-center gap-1">บาดเจ็บ (คน) <span id="sort-rank-inj" class="material-symbols-rounded text-[14px] text-orange-400 opacity-50">sort</span></div>
+    </th>
+    <th class="p-4 font-bold text-center text-brand-200">% สัดส่วนการเกิดเหตุ</th>
+</tr>
                             </thead>
                             <tbody id="ranking-table-body" class="text-sm divide-y divide-surface-100 bg-white">
                                 <tr><td colspan="6" class="p-8 text-center text-slate-500"><div class="skeleton h-10 w-full rounded"></div></td></tr>
@@ -1211,7 +1233,18 @@
 
         const RankingController = {
             currentData: [],
+            rankSort: { key: 'acc', dir: 'desc' }, 
             
+            handleSort(key) {
+                if (this.rankSort.key === key) {
+                    this.rankSort.dir = this.rankSort.dir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.rankSort.key = key;
+                    this.rankSort.dir = 'desc';
+                }
+                this.updateTable();
+            },
+
             render(mapData) {
                 this.currentData = mapData;
                 this.updateTable();
@@ -1254,7 +1287,37 @@
 
                 let sortedArr = Object.keys(groupMap).map(k => {
                     return { name: k, ...groupMap[k] };
-                }).sort((a,b) => b.acc - a.acc);
+                });
+
+                // ประมวลผลการจัดเรียง (Sort Array)
+                const sortKey = this.rankSort ? this.rankSort.key : 'acc';
+                const sortDir = (this.rankSort && this.rankSort.dir === 'asc') ? 1 : -1;
+
+                sortedArr.sort((a, b) => {
+                    if (sortKey === 'name') return a.name.localeCompare(b.name, 'th') * sortDir;
+                    if (sortKey === 'acc') return (a.acc - b.acc) * sortDir;
+                    if (sortKey === 'dead') return (a.dead - b.dead) * sortDir;
+                    if (sortKey === 'inj') return (a.inj - b.inj) * sortDir;
+                    return 0;
+                });
+
+                // อัปเดตไอคอนหัวตาราง
+                const updateRankIcon = (id, key, colorClass) => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        if (sortKey === key) {
+                            el.innerText = sortDir === 1 ? 'arrow_upward' : 'arrow_downward';
+                            el.className = `material-symbols-rounded text-[14px] text-white bg-brand-600 rounded-full ml-1 px-0.5 shadow-sm`;
+                        } else {
+                            el.innerText = 'sort';
+                            el.className = `material-symbols-rounded text-[14px] ${colorClass} opacity-50 hover:opacity-100 ml-1 transition-opacity`;
+                        }
+                    }
+                };
+                updateRankIcon('sort-rank-name', 'name', 'text-brand-400');
+                updateRankIcon('sort-rank-acc', 'acc', 'text-brand-400');
+                updateRankIcon('sort-rank-dead', 'dead', 'text-red-400');
+                updateRankIcon('sort-rank-inj', 'inj', 'text-orange-400');
 
                 let tbody = "";
                 sortedArr.forEach((item, index) => {
@@ -1508,7 +1571,7 @@
                 dashMarkerCluster = L.markerClusterGroup({ disableClusteringAtZoom: 12, maxClusterRadius: 30 });
                 dashMap.addLayer(dashMarkerCluster);
 
-                mainMap = L.map('main-map', mapOpts).setView([13.7563, 100.5018], 11);
+                mainMap = L.map('main-map', mapOpts).setView([15.8700, 100.9925], 6);
                 L.tileLayer(tileUrl).addTo(mainMap);
                 L.control.zoom({ position: 'topright' }).addTo(mainMap);
                 mainMarkerCluster = L.markerClusterGroup({ disableClusteringAtZoom: 14, maxClusterRadius: 40 });
@@ -1583,10 +1646,17 @@
                 
                 const label = document.getElementById('dash-map-label');
                 if(valid > 0) { 
+                // เช็คว่าถ้าเป็นภาพรวมประเทศ ให้บังคับซูมออกที่พิกัด 15.8700, 100.9925 ระดับ 6
+                if (!requestedProvince || requestedProvince === 'all' || requestedProvince === '') {
+                    dashMap.setView([15.8700, 100.9925], 6);
+                } else {
+                    // ถ้าเลือกจังหวัด ให้ซูมเข้าไปหาจุดข้อมูล
                     dashMap.fitBounds(bounds, { padding: [30,30], maxZoom: 11 }); 
-                    let ptText = valid >= 500 ? `<span class="text-brand-500">(แสดง ${valid.toLocaleString()} จุดล่าสุด)</span>` : `<span class="text-brand-500">(แสดง ${valid.toLocaleString()} จุด)</span>`;
-                    if(label) label.innerHTML = requestedProvince ? `พื้นที่: <b>${requestedProvince}</b> ${ptText}` : `รวมทั่วประเทศ ${ptText}`; 
-                } 
+                }
+                
+                let ptText = valid >= 500 ? `<span class="text-brand-500">(แสดง ${valid.toLocaleString()} จุดล่าสุด)</span>` : `<span class="text-brand-500">(แสดง ${valid.toLocaleString()} จุด)</span>`;
+                if(label) label.innerHTML = requestedProvince ? `พื้นที่: <b>${requestedProvince}</b> ${ptText}` : `รวมทั่วประเทศ ${ptText}`; 
+            } 
                 else { 
                     if(label) label.innerText = "ไม่พบพิกัดจุดเกิดเหตุในพื้นที่นี้"; 
                 }
@@ -1695,13 +1765,20 @@
                 });
 
                 if (typeof L.heatLayer !== 'undefined') {
-                    heatLayer = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 14});
-                    if(AppState.currentMapMode === 'heat') mainMap.addLayer(heatLayer);
+                heatLayer = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 14});
+                if(AppState.currentMapMode === 'heat') mainMap.addLayer(heatLayer);
+            }
+
+            if(valid > 0) {
+                // เช็คเงื่อนไขเช่นเดียวกับจุดที่ 1
+                if (!province || province === 'all' || province === '') {
+                    mainMap.setView([15.8700, 100.9925], 6);
+                } else {
+                    mainMap.fitBounds(bounds, { padding: [50,50], maxZoom: 14 });
                 }
+            }
 
-                if(valid > 0) mainMap.fitBounds(bounds, { padding: [50,50], maxZoom: 14 });
-
-                const safeSetCount = (id, count) => { 
+            const safeSetCount = (id, count) => { 
                     const el = document.getElementById(id); 
                     if(el) {
                         el.innerText = count > 0 ? count.toLocaleString() + ' จุด' : '-';
@@ -1732,6 +1809,18 @@
         };
 
         const ViewRenderers = {
+            dashSort: { key: 'acc', dir: 'desc' }, 
+
+            handleDashSort(key) {
+                if (this.dashSort.key === key) {
+                    this.dashSort.dir = this.dashSort.dir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.dashSort.key = key;
+                    this.dashSort.dir = 'desc';
+                }
+                this.renderDashboard(AppState.summaryData);
+            },
+
             renderDashboard(data) {
                 let sumAcc = 0, sumDeath = 0, sumInjuries = 0, sumMajor = 0;
                 let sumTargetBase3Y = 0, sumTargetY1 = 0, sumTargetY2 = 0, sumTargetY3 = 0;
@@ -1758,7 +1847,56 @@
                 const trendHeader = document.getElementById('th-dash-trend');
                 if (trendHeader) trendHeader.style.display = 'table-cell';
 
-                data.forEach((row, i) => {
+                // จัดเรียงข้อมูล (Sorting Logic)
+                let sortedData = [...data];
+                const sortKey = this.dashSort ? this.dashSort.key : 'acc';
+                const sortDir = (this.dashSort && this.dashSort.dir === 'asc') ? 1 : -1;
+
+                sortedData.sort((a, b) => {
+                    let valA = 0, valB = 0;
+                    if (sortKey === 'province') {
+                        valA = a.Province_Name || ''; valB = b.Province_Name || '';
+                        return valA.localeCompare(valB, 'th') * sortDir;
+                    }
+                    
+                    let accA = parseInt(a.Total_Accidents) || 0; let accB = parseInt(b.Total_Accidents) || 0;
+                    let deathA = parseInt(a.Total_Deaths) || 0; let deathB = parseInt(b.Total_Deaths) || 0;
+                    let injA = a.Total_Injuries !== undefined ? parseInt(a.Total_Injuries) : (accA - deathA);
+                    let injB = b.Total_Injuries !== undefined ? parseInt(b.Total_Injuries) : (accB - deathB);
+                    if (countType === 'casualty') { accA = deathA + injA; accB = deathB + injB; }
+
+                    if (sortKey === 'acc') { valA = accA; valB = accB; }
+                    else if (sortKey === 'dead') { valA = deathA; valB = deathB; }
+                    else if (sortKey === 'inj') { valA = injA; valB = injB; }
+                    else if (sortKey === 'major') { valA = parseInt(a.Major_Accidents) || 0; valB = parseInt(b.Major_Accidents) || 0; }
+                    else if (sortKey === 'target') { valA = parseInt(a.Target_Accidents) || 0; valB = parseInt(b.Target_Accidents) || 0; }
+                    else if (sortKey === 'trend') { valA = parseFloat(a.Trend_Percentage) || 0; valB = parseFloat(b.Trend_Percentage) || 0; }
+                    
+                    return (valA - valB) * sortDir;
+                });
+
+                // อัปเดตไอคอนหัวตาราง
+                const updateSortIcon = (id, key) => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        if (sortKey === key) {
+                            el.innerText = sortDir === 1 ? 'arrow_upward' : 'arrow_downward';
+                            el.className = 'material-symbols-rounded text-[14px] text-white bg-brand-600 rounded-full ml-1 px-0.5 shadow-sm';
+                        } else {
+                            el.innerText = 'sort';
+                            el.className = 'material-symbols-rounded text-[14px] text-brand-400 opacity-50 hover:opacity-100 ml-1 transition-opacity';
+                        }
+                    }
+                };
+                updateSortIcon('sort-icon-province', 'province');
+                updateSortIcon('sort-icon-acc', 'acc');
+                updateSortIcon('sort-icon-dead', 'dead');
+                updateSortIcon('sort-icon-inj', 'inj');
+                updateSortIcon('sort-icon-major', 'major');
+                updateSortIcon('sort-icon-target', 'target');
+                updateSortIcon('sort-icon-trend', 'trend');
+
+                sortedData.forEach((row, i) => {
                     let acc = parseInt(row.Total_Accidents) || 0; let death = parseInt(row.Total_Deaths) || 0;
                     let inj = row.Total_Injuries !== undefined ? parseInt(row.Total_Injuries) : (acc - death); if(inj < 0) inj = 0;
                     let major = parseInt(row.Major_Accidents) || 0; let target = parseInt(row.Target_Accidents) || 0;
@@ -1784,7 +1922,7 @@
                     if (i < 10) {
                         tableHTML += `
                             <tr class="transition-colors clickable-row border-b border-surface-100" onclick="triggerMapLoading('${row.Province_Name}')">
-                                <td class="p-4 text-center font-bold text-slate-400">${row.National_Rank || (i+1)}</td>
+                                <td class="p-4 text-center font-bold text-slate-400" title="อันดับรวม: ${row.National_Rank || '-'}">${i+1}</td>
                                 <td class="p-4 font-bold text-brand-900 whitespace-nowrap">${row.Province_Name}</td>
                                 <td class="p-4 text-center font-medium text-slate-600">${acc.toLocaleString()}</td>
                                 <td class="p-4 text-center font-bold text-red-600 bg-red-50/50">${death.toLocaleString()}</td>
@@ -1908,8 +2046,10 @@
                 safeSetText('dash-kpi-injuries', sumInjuries.toLocaleString()); safeSetText('kpi-avg-inj', Math.round(avg3Y * (sumAcc>0?sumInjuries/sumAcc:0)).toLocaleString());
                 safeSetText('dash-kpi-major', sumMajor.toLocaleString()); safeSetText('kpi-avg-major', Math.round((sumMajor/sumAcc)*avg3Y || 0).toLocaleString());
 
-                safeSetText('dash-pct-deaths', `(${sumAcc>0 ? ((sumDeath/sumAcc)*100).toFixed(1) : 0}%)`);
-                safeSetText('dash-pct-inj', `(${sumAcc>0 ? ((sumInjuries/sumAcc)*100).toFixed(1) : 0}%)`);
+                let totalCasualties = sumDeath + sumInjuries;
+                safeSetText('dash-pct-deaths', `(${totalCasualties>0 ? ((sumDeath/totalCasualties)*100).toFixed(1) : 0}%)`);
+                safeSetText('dash-pct-inj', `(${totalCasualties>0 ? ((sumInjuries/totalCasualties)*100).toFixed(1) : 0}%)`);
+                
                 safeSetText('dash-pct-major', `(${sumAcc>0 ? ((sumMajor/sumAcc)*100).toFixed(1) : 0}%)`);
 
                 const factors = [
@@ -1921,9 +2061,12 @@
 
                 let factorHTML = ""; let totalUniverse = sumAcc > 0 ? sumAcc : 1; 
                 factors.slice(0, 4).forEach(f => {
-                    let countYes = f.count; let countNo = Math.max(0, totalUniverse - countYes);
-                    let pctYes = ((countYes / totalUniverse) * 100).toFixed(1); let pctNo = ((countNo / totalUniverse) * 100).toFixed(1);
+                    let countYes = Math.min(f.count, totalUniverse); 
+                    let countNo = Math.max(0, totalUniverse - countYes);
+                    let pctYes = ((countYes / totalUniverse) * 100).toFixed(1); 
+                    let pctNo = ((countNo / totalUniverse) * 100).toFixed(1);
                     let unitText = countType === 'casualty' ? 'คน' : 'ครั้ง';
+                    
                     factorHTML += `<div class="mb-3"><div class="flex justify-between text-[11px] font-bold mb-1.5"><span class="${f.textYes} flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full ${f.colorYes} shadow-sm"></span>${f.nameYes} (${pctYes}%)</span><span class="text-slate-500 flex items-center gap-1.5">${f.nameNo} (${pctNo}%)<span class="w-2.5 h-2.5 rounded-full bg-slate-300 shadow-inner"></span></span></div><div class="w-full bg-slate-300 rounded-full h-2.5 flex overflow-hidden shadow-inner"><div class="${f.colorYes} h-full progress-bar" style="width: ${pctYes}%"></div><div class="bg-slate-300 h-full progress-bar" style="width: ${pctNo}%"></div></div><div class="flex justify-between text-[9px] text-slate-400 mt-1.5 font-medium px-0.5"><span>${countYes.toLocaleString()} ${unitText}</span><span>${countNo.toLocaleString()} ${unitText}</span></div></div>`;
                 });
                 safeSetHTML('dash-top-factors', factorHTML || '<p class="text-sm text-slate-500">ไม่มีข้อมูลปัจจัย</p>');
