@@ -740,14 +740,28 @@
 
                     <!-- Charts Area -->
                     <div class="grid grid-cols-1 gap-6">
-                        <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col">
-                            <h3 class="text-sm font-bold text-brand-900 mb-4 flex items-center gap-2" id="compare-chart-bar-title"><span class="material-symbols-rounded text-brand-600">bar_chart</span> กราฟเปรียบเทียบรายมิติ</h3>
-                            <div class="w-full h-[450px] echart-container" id="chart-compare-bar"></div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col">
-                            <h3 class="text-sm font-bold text-brand-900 mb-4 flex items-center gap-2" id="compare-chart-line-title"><span class="material-symbols-rounded text-brand-600">show_chart</span> กราฟเส้นแนวโน้มการเติบโต</h3>
-                            <div class="w-full h-[350px] echart-container" id="chart-compare-line"></div>
-                        </div>
+                        <div id="container-compare-bar" class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col overflow-hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2" id="compare-chart-bar-title">
+            <span class="material-symbols-rounded text-brand-600">bar_chart</span> กราฟเปรียบเทียบรายมิติ
+        </h3>
+        <button onclick="ChartController.toggleFullscreen('container-compare-bar')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-200 bg-white" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div class="w-full flex-1 min-h-[450px] echart-container" id="chart-compare-bar"></div>
+</div>
+                        <div id="container-compare-line" class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm flex flex-col overflow-hidden">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2" id="compare-chart-line-title">
+            <span class="material-symbols-rounded text-brand-600">show_chart</span> กราฟเส้นแนวโน้มการเติบโต
+        </h3>
+        <button onclick="ChartController.toggleFullscreen('container-compare-line')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-200 bg-white" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div class="w-full flex-1 min-h-[350px] echart-container" id="chart-compare-line"></div>
+</div>
                     </div>
 
                     <!-- ตารางข้อมูลสถิติเปรียบเทียบ -->
@@ -899,12 +913,6 @@
         </h3>
         
         <div class="flex items-center gap-2 w-full sm:w-auto">
-            <select id="filter-trend-metric" onchange="ChartController.renderTrendChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer flex-1 sm:flex-none">
-                <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
-                <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
-                <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
-            </select>
-            
             <button onclick="ChartController.toggleFullscreen('container-trend-chart')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ (Fullscreen)">
                 <span class="material-symbols-rounded text-xl">fullscreen</span>
             </button>
@@ -937,20 +945,28 @@
 </div>
 
                         <!-- กราฟที่ 2: 3D Bar Chart -->
-                        <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2">
-                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
-                                <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2">
-                                    <span class="material-symbols-rounded text-purple-600">view_in_ar</span> 3. แท่งความถี่ 3 มิติ (3D Time & Day Distribution)
-                                </h3>
-                                <select id="filter-3d-metric" onchange="ChartController.render3DBarChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer w-full sm:w-auto">
-                                    <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
-                                    <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
-                                    <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
-                                </select>
-                            </div>
-                            <div class="w-full h-[500px] echart-container" id="chart-3d-bar"></div>
-                            <p class="text-[10px] text-slate-400 mt-2 text-center">*ใช้เมาส์คลิกซ้ายค้างไว้แล้วหมุน (Rotate 3D) เพื่อดูมุมมองอื่นๆ ของตึกความถี่</p>
-                        </div>
+                        <div id="container-3d-chart" class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2 overflow-hidden flex flex-col">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
+        <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2">
+            <span class="material-symbols-rounded text-purple-600">view_in_ar</span> 3. แท่งความถี่ 3 มิติ (3D Time & Day Distribution)
+        </h3>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <select id="filter-3d-metric" onchange="ChartController.render3DBarChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer flex-1 sm:flex-none">
+                <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
+                <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
+                <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
+            </select>
+            
+            <button onclick="ChartController.toggleFullscreen('container-3d-chart')" class="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors border border-transparent hover:border-purple-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ (Fullscreen)">
+                <span class="material-symbols-rounded text-xl">fullscreen</span>
+            </button>
+        </div>
+    </div>
+    
+    <div class="w-full flex-1 min-h-[500px] echart-container" id="chart-3d-bar"></div>
+    <p class="text-[10px] text-slate-400 mt-2 text-center">*ใช้เมาส์คลิกซ้ายค้างไว้แล้วหมุน (Rotate 3D) เพื่อดูมุมมองอื่นๆ ของตึกความถี่</p>
+</div>
                     </div>
                 </div>
             </main>
@@ -1487,17 +1503,105 @@
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-3 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-cyan-600 align-bottom mr-1">calendar_month</span> ฮีทแมปปฏิทินเกิดเหตุ</h3><p class="text-[10px] text-slate-500 mb-2">จุดความร้อนการเกิดเหตุทั้งปี (แสดงจำนวน/%)</p><div id="sm-ch-cal" class="w-full flex-1 min-h-[250px] overflow-x-auto" style="scrollbar-width: none;"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-orange-500 align-bottom mr-1">schedule</span> นาฬิกาเฝ้าระวัง 24 ชม.</h3><p class="text-[10px] text-slate-500 mb-2">ความถี่เกิดเหตุ แยกตามเวลา</p><div id="sm-ch-clock" class="w-full flex-1 min-h-[300px]"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-red-500 align-bottom mr-1">celebration</span> 7 วันอันตราย vs วันปกติ</h3><p class="text-[10px] text-slate-500 mb-2">เปรียบเทียบอัตราการเสียชีวิต (Lethality Rate) ช่วงเทศกาล</p><div id="sm-ch-holiday" class="w-full flex-1 min-h-[300px]"></div></div>
+                        <div id="container-sm-ch-cal" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-3 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-cyan-600 align-bottom mr-1">calendar_month</span> ฮีทแมปปฏิทินเกิดเหตุ</h3>
+            <p class="text-[10px] text-slate-500">จุดความร้อนการเกิดเหตุทั้งปี (แสดงจำนวน/%)</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-cal')" class="p-1.5 text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-colors border border-transparent hover:border-cyan-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-cal" class="w-full flex-1 min-h-[250px] overflow-x-auto" style="scrollbar-width: none;"></div>
+</div>
+                        <div id="container-sm-ch-clock" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-orange-500 align-bottom mr-1">schedule</span> นาฬิกาเฝ้าระวัง 24 ชม.</h3>
+            <p class="text-[10px] text-slate-500">ความถี่เกิดเหตุ แยกตามเวลา</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-clock')" class="p-1.5 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-lg transition-colors border border-transparent hover:border-orange-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-clock" class="w-full flex-1 min-h-[300px]"></div>
+</div>
+                        <div id="container-sm-ch-holiday" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-red-500 align-bottom mr-1">celebration</span> 7 วันอันตราย vs วันปกติ</h3>
+            <p class="text-[10px] text-slate-500">เปรียบเทียบอัตราการเสียชีวิต (Lethality Rate) ช่วงเทศกาล</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-holiday')" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-holiday" class="w-full flex-1 min-h-[300px]"></div>
+</div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">ลูกโซ่เหตุการณ์ (Sankey)</h3><p class="text-[10px] text-slate-500 mb-2">ถนน ➔ พฤติกรรม ➔ ผู้ประสบเหตุ</p><div id="sm-ch-sankey" class="w-full flex-1 min-h-[350px]"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">5 พื้นที่อัตราตายสูงสุด (Red Zones)</h3><p class="text-[10px] text-slate-500 mb-2">จัดอันดับจากอัตราส่วนการตายเทียบกับจำนวนเกิดเหตุ</p><div id="sm-ch-redzone" class="w-full flex-1 min-h-[350px]"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">เมทริกซ์จุดสกัด (Deadly Matrix)</h3><p class="text-[10px] text-slate-500 mb-2">พฤติกรรมเสี่ยง x ลักษณะถนน</p><div id="sm-ch-matrix" class="w-full flex-1 min-h-[350px] overflow-x-auto" style="scrollbar-width: none;"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">กรวยรอดชีวิต (นิรภัย)</h3><p class="text-[10px] text-slate-500 mb-2">เทียบโอกาสตาย สวมหมวก vs ไม่สวมหมวก</p><div id="sm-ch-funnel" class="w-full flex-1 min-h-[300px]"></div></div>
-                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">เรดาร์สภาพแวดล้อม</h3><p class="text-[10px] text-slate-500 mb-2">ปัจจัยร่วมด้านกายภาพที่ไม่ใช่พฤติกรรมคน</p><div id="sm-ch-radar" class="w-full flex-1 min-h-[300px]"></div></div>
+                        <div id="container-sm-ch-sankey" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1">ลูกโซ่เหตุการณ์ (Sankey)</h3>
+            <p class="text-[10px] text-slate-500">ถนน ➔ พฤติกรรม ➔ ผู้ประสบเหตุ</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-sankey')" class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors border border-transparent hover:border-slate-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-sankey" class="w-full flex-1 min-h-[350px]"></div>
+</div>
+                        <div id="container-sm-ch-redzone" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1">5 พื้นที่อัตราตายสูงสุด (Red Zones)</h3>
+            <p class="text-[10px] text-slate-500">จัดอันดับจากอัตราส่วนการตายเทียบกับจำนวนเกิดเหตุ</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-redzone')" class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-redzone" class="w-full flex-1 min-h-[350px]"></div>
+</div>
+                        <div id="container-sm-ch-matrix" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1">เมทริกซ์จุดสกัด (Deadly Matrix)</h3>
+            <p class="text-[10px] text-slate-500">พฤติกรรมเสี่ยง x ลักษณะถนน</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-matrix')" class="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-matrix" class="w-full flex-1 min-h-[350px] overflow-x-auto" style="scrollbar-width: none;"></div>
+</div>
+                        <div id="container-sm-ch-funnel" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1">กรวยรอดชีวิต (นิรภัย)</h3>
+            <p class="text-[10px] text-slate-500">เทียบโอกาสตาย สวมหมวก vs ไม่สวมหมวก</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-funnel')" class="p-1.5 text-slate-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors border border-transparent hover:border-teal-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-funnel" class="w-full flex-1 min-h-[300px]"></div>
+</div>
+                        <div id="container-sm-ch-radar" class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden flex flex-col">
+    <div class="flex justify-between items-start mb-2">
+        <div>
+            <h3 class="font-bold text-brand-900 text-sm mb-1">เรดาร์สภาพแวดล้อม</h3>
+            <p class="text-[10px] text-slate-500">ปัจจัยร่วมด้านกายภาพที่ไม่ใช่พฤติกรรมคน</p>
+        </div>
+        <button onclick="ChartController.toggleFullscreen('container-sm-ch-radar')" class="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ">
+            <span class="material-symbols-rounded text-xl">fullscreen</span>
+        </button>
+    </div>
+    <div id="sm-ch-radar" class="w-full flex-1 min-h-[300px]"></div>
+</div>
                     </div>
                 `;
             },
