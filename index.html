@@ -245,13 +245,19 @@
             
             <div class="w-px h-5 bg-surface-300 shrink-0 mx-2"></div>
             
-            <select id="filter-bureau" onchange="FilterController.handleBureauChange()" class="bg-surface-50 border border-surface-300 text-slate-700 text-xs rounded-lg py-2 pl-3 pr-7 focus:ring-brand-500 focus:border-brand-500 cursor-pointer shrink-0 font-medium shadow-sm">
-                <option value="">บช./ภ. (ทั้งหมด)</option>
-                <option value="กองบัญชาการตำรวจนครบาล">บช.น.</option>
-                <option value="ตำรวจภูธรภาค 1">ภ.1</option><option value="ตำรวจภูธรภาค 2">ภ.2</option><option value="ตำรวจภูธรภาค 3">ภ.3</option>
-                <option value="ตำรวจภูธรภาค 4">ภ.4</option><option value="ตำรวจภูธรภาค 5">ภ.5</option><option value="ตำรวจภูธรภาค 6">ภ.6</option>
-                <option value="ตำรวจภูธรภาค 7">ภ.7</option><option value="ตำรวจภูธรภาค 8">ภ.8</option><option value="ตำรวจภูธรภาค 9">ภ.9</option>
-            </select>
+            <select id="filter-bureau" onchange="FilterController.handleBureauChange()" class="form-select text-sm rounded-md border-surface-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 w-full">
+    <option value="">ภาพรวมประเทศ</option>
+    <option value="กองบัญชาการตำรวจนครบาล">กองบัญชาการตำรวจนครบาล (บช.น.)</option>
+    <option value="ตำรวจภูธรภาค 1">ตำรวจภูธรภาค 1 (ภ.1)</option>
+    <option value="ตำรวจภูธรภาค 2">ตำรวจภูธรภาค 2 (ภ.2)</option>
+    <option value="ตำรวจภูธรภาค 3">ตำรวจภูธรภาค 3 (ภ.3)</option>
+    <option value="ตำรวจภูธรภาค 4">ตำรวจภูธรภาค 4 (ภ.4)</option>
+    <option value="ตำรวจภูธรภาค 5">ตำรวจภูธรภาค 5 (ภ.5)</option>
+    <option value="ตำรวจภูธรภาค 6">ตำรวจภูธรภาค 6 (ภ.6)</option>
+    <option value="ตำรวจภูธรภาค 7">ตำรวจภูธรภาค 7 (ภ.7)</option>
+    <option value="ตำรวจภูธรภาค 8">ตำรวจภูธรภาค 8 (ภ.8)</option>
+    <option value="ตำรวจภูธรภาค 9">ตำรวจภูธรภาค 9 (ภ.9)</option>
+</select>
             
             <select id="filter-division" onchange="FilterController.handleDivisionChange()" class="bg-surface-50 border border-surface-300 text-slate-700 text-xs rounded-lg py-2 pl-3 pr-7 focus:ring-brand-500 focus:border-brand-500 cursor-pointer shrink-0 font-medium shadow-sm max-w-[150px]">
                 <option value="">บก./ภ.จว. (ทั้งหมด)</option>
@@ -518,8 +524,9 @@
                             <optgroup label="ระดับความรุนแรง (Severity)">
                                 <option value="all">📍 แสดงทุกระดับความรุนแรง</option>
                                 <option value="major">🚨 เฉพาะอุบัติเหตุใหญ่ (Major Case)</option>
-                                <option value="blackspot">☠️ เฉพาะจุดเกิดเหตุซ้ำซ้อน (Blackspots)</option>
-                                <option value="fatal">💀 เฉพาะเคสเสียชีวิต (Fatal)</option>
+                                <option value="blackspot">☠️ เฉพาะจุดเสี่ยงซ้ำซ้อน (ต่างวาระ)</option>
+				<option value="multi_vehicle">🚙 เฉพาะอุบัติเหตุมีคู่กรณี (หลายคัน)</option>
+				<option value="fatal">💀 เฉพาะเคสเสียชีวิต (Fatal)</option>
                                 <option value="injury">🤕 เฉพาะเคสบาดเจ็บ (Injury)</option>
                             </optgroup>
                             <optgroup label="✨ วิเคราะห์จุดเสี่ยงเฉพาะด้าน (AI Threat)">
@@ -1483,16 +1490,36 @@
                 });
                 UIController.updateCompareLabel();
             },
+            
+            // 🚀 ฟังก์ชันที่จัดการเมื่อเลือก "ภาพรวมประเทศ" หรือเลือก "บช."
             handleBureauChange() {
                 const bu = document.getElementById('filter-bureau').value;
                 const div = document.getElementById('filter-division');
+                const station = document.getElementById('filter-station');
+                
                 div.innerHTML = '<option value="">บก./ภ.จว. (ทั้งหมด)</option>';
-                document.getElementById('filter-station').value = ''; 
-                if (AppConfig.BureauMapping[bu]) {
-                    AppConfig.BureauMapping[bu].forEach(d => { div.innerHTML += `<option value="${d.replace('ภ.จว.', 'ตำรวจภูธรจังหวัด')}">${d}</option>`; });
+                if(station) station.value = '';
+                
+                if (bu === "") {
+                    // 🟢 ถ้า value เป็นค่าว่าง แปลว่าผู้ใช้เลือก "ภาพรวมประเทศ"
+                    console.log("🟢 เข้าสู่โหมดวิเคราะห์ภาพรวมประเทศ");
+                    UIController.showToast("เปลี่ยนเป็นโหมด: ภาพรวมประเทศ", "info");
+                } else {
+                    // 🔵 ถ้าเลือก บช. ปกติ ให้ดึงรายชื่อจังหวัดมาโชว์ในช่องถัดไป
+                    console.log("🔵 เข้าสู่โหมดวิเคราะห์ระดับ บช.: " + bu);
+                    if (AppConfig.BureauMapping[bu]) {
+                        AppConfig.BureauMapping[bu].forEach(d => { 
+                            div.innerHTML += `<option value="${d.replace('ภ.จว.', 'ตำรวจภูธรจังหวัด')}">${d}</option>`; 
+                        });
+                    }
                 }
             },
-            handleDivisionChange() { document.getElementById('filter-station').value = ''; },
+            
+            handleDivisionChange() { 
+                const station = document.getElementById('filter-station');
+                if(station) station.value = '';
+            },
+            
             getParams() {
                 return {
                     countType: document.getElementById('filter-count-type')?.value || 'incident',
@@ -1501,7 +1528,9 @@
                     endDate: document.getElementById('filter-end-date')?.value || '',
                     month: document.getElementById('filter-month')?.value || '',
                     day: document.getElementById('filter-day')?.value || '',
-                    bureau: document.getElementById('filter-bureau')?.value || '',
+                    
+                    // 🛠️ ตรวจสอบให้แน่ใจว่าดึงค่าจาก filter-bureau ได้ถูกต้อง
+                    bureau: document.getElementById('filter-bureau')?.value || '', 
                     division: document.getElementById('filter-division')?.value || '',
                     station: document.getElementById('filter-station')?.value || '',
                     eventId: document.getElementById('filter-event-id')?.value || '', 
@@ -1676,109 +1705,249 @@
                     threatType = sevFilter;
                 }
 
-                let counts = { total: 0, major: 0, blackspot: 0, fatal: 0, severe: 0, killing: 0, alcohol: 0, helmet: 0, night: 0, youth: 0, license: 0 };
+                // 🌟 ตัวนับสถิติ (เพิ่ม counts.multi มารอไว้แล้ว)
+                let counts = { total: 0, major: 0, blackspot: 0, multi: 0, fatal: 0, severe: 0, killing: 0, alcohol: 0, helmet: 0, night: 0, youth: 0, license: 0 };
 
-                data.forEach(item => {
-                    if(item.lat && item.lng) {
-                        let severity = parseInt(item.max_severity_score) || 1;
-                        let d = parseInt(item.deaths) || (severity === 10 ? 1 : 0); 
-                        let i = parseInt(item.injuries) || 0;
-                        
-                        let isMajor = this.isMajorAccident(d, i); 
-                        let isFatal = (severity === 10 || d >= 1); 
-                        let isSevere = (severity === 5 || (i >= 1 && d === 0)); 
-                        let rpt = parseInt(item.repeat_count) || 1; 
-                        let isBlackspot = rpt >= 2;
-                        
-                        let isKillingZone = (d >= 1 && (d / (d + i)) >= 0.5);
-                        let isNoHelmet = String(item.vehicle_type).includes('จักรยานยนต์') && String(item.helmet_usages).includes('ไม่สวม') && d >= 1;
-                        let isAlcohol = String(item.primary_factor || item.driving_behavior_factor || '').includes('เมา') || String(item.alcohol_test_result).includes('เมา');
-                        
-                        let isYouth = false;
-                        if(item.ages) {
-                            isYouth = String(item.ages).split(',').some(a => {
-                                let ageNum = parseInt(a);
-                                return !isNaN(ageNum) && ageNum < 18 && ageNum > 0;
-                            });
-                        }
-                        
-                        let dtObj = parseStrictDateTime(item.accident_date, item.accident_time);
-                        let lightCond = String(item.light_condition || '');
-                        let isDark = lightCond.includes('ไม่มี') || lightCond.includes('มืด') || lightCond.includes('ไม่สว่าง');
-                        let isNightBlind = dtObj.isValidTime && (dtObj.hour >= 0 && dtObj.hour <= 4) && isDark;
-                        let isNoLicense = String(item.license_statuses).includes('ไม่มี');
-                        
-                        if (sevFilter === 'major' && !isMajor) return;
-                        if (sevFilter === 'blackspot' && !isBlackspot) return;
-                        if (sevFilter === 'fatal' && !isFatal) return;
-                        if (sevFilter === 'injury' && !isSevere) return; 
-                        if (sevFilter === 'killing_zone' && !isKillingZone) return;
-                        if (sevFilter === 'no_helmet' && !isNoHelmet) return;
-                        if (sevFilter === 'alcohol' && !isAlcohol) return;
-                        if (sevFilter === 'youth' && !isYouth) return;
-                        if (sevFilter === 'night_blind' && !isNightBlind) return;
-                        if (sevFilter === 'no_license' && !isNoLicense) return;
-
-                        counts.total++;
-                        if(isMajor) counts.major++;
-                        if(isBlackspot) counts.blackspot++;
-                        if(isFatal) counts.fatal++;
-                        if(isSevere) counts.severe++;
-                        if(isKillingZone) counts.killing++;
-                        if(isAlcohol) counts.alcohol++;
-                        if(isNoHelmet) counts.helmet++;
-                        if(isNightBlind) counts.night++;
-                        if(isYouth) counts.youth++;
-                        if(isNoLicense) counts.license++;
-
-                        let lat = parseFloat(item.lat), lng = parseFloat(item.lng);
-                        valid++; bounds.extend([lat, lng]);
-                        
-                        heatPoints.push([lat, lng, isMajor ? 1 : (isFatal ? 0.8 : (isSevere ? 0.5 : 0.2))]);
-
-                        let marker = L.marker([lat, lng], {icon: this.getMapIcon(item.max_severity_score, d, i, isBlackspot, rpt, threatType)});
-                        
-                        let badge = isMajor ? `<div class="text-[11px] font-bold text-white bg-red-800 px-2 py-1 rounded mt-2 text-center shadow-md">🚨 อุบัติเหตุใหญ่ (MAJOR CASE)</div>` : '';
-                        let blackspotBadge = isBlackspot ? `<div class="text-[11px] font-bold text-white bg-purple-700 px-2 py-1 rounded mt-1 text-center shadow-md">☠️ จุดเสี่ยงซ้ำซ้อน รัศมี 100ม. (เกิดแล้ว ${rpt} ครั้ง)</div>` : '';
-                        
-                        let threatBadge = '';
-                        if(threatType === 'killing_zone') threatBadge = `<div class="text-[11px] font-bold text-white bg-slate-800 px-2 py-1 rounded mt-1 text-center border border-white">☠️ อัตราการเสียชีวิตสูง (Killing Zone)</div>`;
-                        else if(threatType === 'alcohol') threatBadge = `<div class="text-[11px] font-bold text-white bg-purple-600 px-2 py-1 rounded mt-1 text-center">🍻 ศูนย์กลางการเมาแล้วขับ</div>`;
-                        else if(threatType === 'no_helmet') threatBadge = `<div class="text-[11px] font-bold text-white bg-orange-600 px-2 py-1 rounded mt-1 text-center">🏍️ ผู้เสียชีวิตไม่สวมหมวกนิรภัย</div>`;
-                        else if(threatType === 'youth') threatBadge = `<div class="text-[11px] font-bold text-slate-800 bg-yellow-400 px-2 py-1 rounded mt-1 text-center">🎓 เยาวชนประสบเหตุ (<18 ปี)</div>`;
-                        else if(threatType === 'night_blind') threatBadge = `<div class="text-[11px] font-bold text-white bg-slate-900 px-2 py-1 rounded mt-1 text-center">🌑 จุดเกิดเหตุที่มืด (ไม่มีไฟส่องสว่าง)</div>`;
-                        else if(threatType === 'no_license') threatBadge = `<div class="text-[11px] font-bold text-white bg-red-600 px-2 py-1 rounded mt-1 text-center">🪪 ผู้ขับขี่ไม่มีใบอนุญาต</div>`;
-
-                        let cause = item.primary_factor || 'ไม่ระบุ';
-                        
-                        marker.bindPopup(`
-                            <div class="font-sans p-1 min-w-[150px]">
-                                <strong class="text-brand-900 block border-b border-surface-200 pb-2 mb-2 text-xs">Event: ${item.event_id}</strong>
-                                <div class="text-[10px] text-slate-600 mb-1">📅 วันที่: ${item.accident_date} | ${item.accident_time} น.</div>
-                                <div class="text-[10px] text-slate-600 mb-1">💀 เสียชีวิต: ${d} ราย | 🤕 บาดเจ็บ: ${i} คน</div>
-                                <div class="text-[10px] text-slate-600 mb-1">🔍 สาเหตุ: <span class="font-bold text-brand-600">${cause}</span></div>
-                                ${badge} ${blackspotBadge} ${threatBadge}
-                            </div>
-                        `);
-                        mainMarkerCluster.addLayer(marker);
+                let gridGroups = {};
+                data.forEach(r => {
+                    if (r.lat && r.lng) {
+                        let gridLat = parseFloat(r.lat).toFixed(3);
+                        let gridLng = parseFloat(r.lng).toFixed(3);
+                        let gridKey = `${gridLat}_${gridLng}`;
+                        if (!gridGroups[gridKey]) gridGroups[gridKey] = [];
+                        gridGroups[gridKey].push(r);
                     }
                 });
 
+                Object.keys(gridGroups).forEach(gridKey => {
+                    let relatedEvents = gridGroups[gridKey];
+                    let eventsByDate = {}; 
+                    let isBlackspotOld = false; 
+
+                    let groupHasMajor = false, groupHasFatal = false, groupHasSevere = false;
+                    let groupHasKilling = false, groupHasNoHelmet = false, groupHasAlcohol = false;
+                    let groupHasYouth = false, groupHasNightBlind = false, groupHasNoLicense = false;
+
+                    relatedEvents.forEach(r => {
+                        if ((parseInt(r.repeat_count) || 1) >= 2) isBlackspotOld = true;
+
+                        let dateKey = r.accident_date || 'ไม่ระบุวันที่'; 
+                        if (!eventsByDate[dateKey]) {
+                            eventsByDate[dateKey] = { 
+                                date: dateKey,
+                                rows: [], 
+                                vehicles: [], 
+                                event_ids: [],
+                                total_dead: 0 
+                            };
+                        }
+                        
+                        eventsByDate[dateKey].rows.push(r);
+                        eventsByDate[dateKey].vehicles.push(r.vehicle_type || 'ไม่ระบุ');
+                        if (r.event_id) eventsByDate[dateKey].event_ids.push(r.event_id);
+                        eventsByDate[dateKey].total_dead += parseInt(r.deaths) || (parseInt(r.max_severity_score) === 10 ? 1 : 0);
+
+                        let sev = parseInt(r.max_severity_score) || 1;
+                        let d = parseInt(r.deaths) || (sev === 10 ? 1 : 0);
+                        let i = parseInt(r.injuries) || 0;
+
+                        if (this.isMajorAccident(d, i)) groupHasMajor = true;
+                        if (sev === 10 || d >= 1) groupHasFatal = true;
+                        if (sev === 5 || (i >= 1 && d === 0)) groupHasSevere = true;
+                        if (d >= 1 && (d / (d + i)) >= 0.5) groupHasKilling = true;
+                        if (String(r.vehicle_type).includes('จักรยานยนต์') && String(r.helmet_usages).includes('ไม่สวม') && d >= 1) groupHasNoHelmet = true;
+                        if (String(r.primary_factor || r.driving_behavior_factor || '').includes('เมา') || String(r.alcohol_test_result).includes('เมา')) groupHasAlcohol = true;
+                        if (r.ages && String(r.ages).split(',').some(a => parseInt(a) < 18 && parseInt(a) > 0)) groupHasYouth = true;
+                        
+                        let dtObj = parseStrictDateTime(r.accident_date, r.accident_time);
+                        let lightCond = String(r.light_condition || '');
+                        if (dtObj.isValidTime && (dtObj.hour >= 0 && dtObj.hour <= 4) && (lightCond.includes('ไม่มี') || lightCond.includes('มืด') || lightCond.includes('ไม่สว่าง'))) groupHasNightBlind = true;
+                        if (String(r.license_statuses).includes('ไม่มี')) groupHasNoLicense = true;
+                    });
+
+                    let uniqueDays = Object.values(eventsByDate);
+                    let isBlackspotLocation = uniqueDays.length > 1 || isBlackspotOld; 
+                    
+                    // 🚀🚀🚀 จุดที่ได้รับการแก้ไข: ตรวจจับ "ลูกน้ำ" และ "และ"
+                    let hasMultiVehicle = false;
+                    let maxVehCountInPoint = 1;
+
+                    uniqueDays.forEach(day => {
+                        let dailyVehCount = day.rows.reduce((sum, r) => {
+                            // ดึงข้อความในช่องประเภทรถ
+                            let vStr = String(r.vehicle_type || r.Vehicle_Type || r.vehicle_group || r.ยานพาหนะ || '').trim();
+                            let countInRow = 1;
+                            
+                            // ถ้ามีข้อมูลรถ ให้ใช้คำสั่งแยกข้อความด้วย , หรือ / หรือ | หรือคำว่า "และ"
+                            if (vStr && vStr !== 'ไม่ระบุ' && vStr !== '-') {
+                                let parts = vStr.split(/[,/|]|และ/).filter(v => v.trim() !== '');
+                                countInRow = parts.length > 0 ? parts.length : 1;
+                            }
+                            return sum + countInRow; // บวกจำนวนรถกลับเข้าไป
+                        }, 0);
+                        
+                        // ถ้ายอดรวมรถในวันนั้น (หรือจำนวนบรรทัด) มากกว่า 1 ให้ถือว่ามีคู่กรณีทันที
+                        let finalDailyCount = Math.max(dailyVehCount, day.rows.length);
+                        if (finalDailyCount > maxVehCountInPoint) maxVehCountInPoint = finalDailyCount;
+                        if (finalDailyCount > 1) hasMultiVehicle = true; 
+                    });
+                    // 🚀🚀🚀 สิ้นสุดจุดที่แก้ไข
+
+                    // ระบบ Filter ซ่อนจุดที่ไม่ตรงเงื่อนไข
+                    if (sevFilter === 'major' && !groupHasMajor) return;
+                    if (sevFilter === 'blackspot' && !isBlackspotLocation) return; 
+                    if (sevFilter === 'multi_vehicle' && !hasMultiVehicle) return; 
+                    if (sevFilter === 'fatal' && !groupHasFatal) return;
+                    if (sevFilter === 'injury' && !groupHasSevere) return; 
+                    if (sevFilter === 'killing_zone' && !groupHasKilling) return;
+                    if (sevFilter === 'no_helmet' && !groupHasNoHelmet) return;
+                    if (sevFilter === 'alcohol' && !groupHasAlcohol) return;
+                    if (sevFilter === 'youth' && !groupHasYouth) return;
+                    if (sevFilter === 'night_blind' && !groupHasNightBlind) return;
+                    if (sevFilter === 'no_license' && !groupHasNoLicense) return;
+
+                    // บันทึกสถิติ (นับเพิ่มลงไปในตัวแปร counts)
+                    counts.total++;
+                    if(groupHasMajor) counts.major++;
+                    if(isBlackspotLocation) counts.blackspot++; 
+                    if(hasMultiVehicle) counts.multi++; // 🌟 นับยอดคู่กรณีไว้ตรงนี้
+                    if(groupHasFatal) counts.fatal++;
+                    if(groupHasSevere) counts.severe++;
+                    if(groupHasKilling) counts.killing++;
+                    if(groupHasAlcohol) counts.alcohol++;
+                    if(groupHasNoHelmet) counts.helmet++;
+                    if(groupHasNightBlind) counts.night++;
+                    if(groupHasYouth) counts.youth++;
+                    if(groupHasNoLicense) counts.license++;
+
+                    let lat = parseFloat(relatedEvents[0].lat), lng = parseFloat(relatedEvents[0].lng);
+                    valid++; bounds.extend([lat, lng]);
+                    heatPoints.push([lat, lng, groupHasMajor ? 1 : (groupHasFatal ? 0.8 : (groupHasSevere ? 0.5 : 0.2))]);
+
+                    let displayItem = relatedEvents.sort((a,b) => (parseInt(b.deaths)||0) - (parseInt(a.deaths)||0))[0];
+                    let d = parseInt(displayItem.deaths) || (parseInt(displayItem.max_severity_score) === 10 ? 1 : 0);
+                    let i = parseInt(displayItem.injuries) || 0;
+
+                    let drawAsMajor = false;
+                    let drawAsBlackspot = false;
+                    let drawAsMulti = false;
+
+                    // กำหนดความสำคัญสีของหมุด
+                    if (sevFilter === 'major') drawAsMajor = true;
+                    else if (sevFilter === 'blackspot') drawAsBlackspot = true; 
+                    else if (sevFilter === 'multi_vehicle') drawAsMulti = true; 
+                    else {
+                        if (groupHasMajor) drawAsMajor = true;
+                        else if (isBlackspotLocation) drawAsBlackspot = true;
+                        else if (hasMultiVehicle) drawAsMulti = true;
+                    }
+
+                    // ปักหมุดลงแผนที่ (มีเอฟเฟกต์กระพริบตามที่ทำไว้)
+                    let marker;
+                    if (drawAsMajor) {
+                        marker = L.marker([lat, lng], { icon: L.divIcon({ className: 'bg-transparent border-0', html: `<div class="relative flex items-center justify-center w-8 h-8"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span><span class="relative inline-flex rounded-full h-7 w-7 bg-red-600 border-2 border-white items-center justify-center text-white text-[12px] shadow-[0_0_15px_rgba(220,38,38,0.9)]">🚨</span></div>`, iconSize: [32,32], iconAnchor: [16,16] }) });
+                    } else if (drawAsBlackspot) {
+                        let badgeNum = uniqueDays.length > 1 ? uniqueDays.length : '!';
+                        marker = L.marker([lat, lng], { icon: L.divIcon({ className: 'bg-transparent border-0', html: `<div class="relative flex items-center justify-center w-7 h-7"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span><span class="relative inline-flex rounded-full h-6 w-6 bg-purple-600 border-2 border-white items-center justify-center text-white font-bold text-[11px] shadow-[0_0_15px_rgba(147,51,234,0.9)]">${badgeNum}</span></div>`, iconSize: [28,28], iconAnchor: [14,14] }) });
+                    } else if (drawAsMulti) {
+                        marker = L.marker([lat, lng], { icon: L.divIcon({ className: 'bg-transparent border-0', html: `<div class="relative flex items-center justify-center w-6 h-6"><span class="relative inline-flex rounded-full h-6 w-6 bg-blue-600 border-2 border-white items-center justify-center text-white font-bold text-[10px] shadow-[0_0_10px_rgba(37,99,235,0.7)]">${maxVehCountInPoint}</span></div>`, iconSize: [24,24], iconAnchor: [12,12] }) });
+                    } else {
+                        marker = L.marker([lat, lng], { icon: this.getMapIcon(displayItem.max_severity_score, d, i, false, 1, threatType) }); 
+                    }
+
+                    // สร้างป้าย Popup
+                    let badge = groupHasMajor ? `<div class="text-[11px] font-bold text-white bg-red-800 px-2 py-1 rounded mt-2 text-center shadow-md">🚨 อุบัติเหตุใหญ่ (MAJOR CASE)</div>` : '';
+                    let threatBadge = '';
+                    if(threatType === 'killing_zone') threatBadge = `<div class="text-[11px] font-bold text-white bg-slate-800 px-2 py-1 rounded mt-1 text-center border border-white">☠️ อัตราการเสียชีวิตสูง (Killing Zone)</div>`;
+                    
+                    let cause = displayItem.primary_factor || 'ไม่ระบุ';
+                    let relatedEventsHTML = '';
+                    let customBadge = '';
+                    
+                    if (isBlackspotLocation) {
+                        let rptText = uniqueDays.length > 1 ? `ต่างวาระ ${uniqueDays.length} ครั้ง` : `ประวัติเก่า ${displayItem.repeat_count || 2} ครั้ง`;
+                        customBadge = `<div class="text-[11px] font-bold text-white bg-purple-700 px-2 py-1 rounded mt-2 text-center shadow-md">☠️ จุดเสี่ยงซ้ำซ้อน (${rptText})</div>`;
+                    } else if (hasMultiVehicle) {
+                        customBadge = `<div class="text-[11px] font-bold text-white bg-blue-600 px-2 py-1 rounded mt-2 text-center shadow-md">🚙 อุบัติเหตุมีคู่กรณี (ชน ${maxVehCountInPoint} คัน)</div>`;
+                    }
+
+                    if (isBlackspotLocation || hasMultiVehicle) {
+                        let filterYearEl = document.getElementById('filter-year');
+                        let currentFilterYear = filterYearEl ? filterYearEl.value : '';
+                        let totalRepeatCount = parseInt(displayItem.repeat_count) || 1;
+
+                        if (uniqueDays.length === 1 && !hasMultiVehicle && totalRepeatCount > 1) {
+                            let singleDay = uniqueDays[0];
+                            let dtObj = parseStrictDateTime(singleDay.rows[0].accident_date, singleDay.rows[0].accident_time);
+                            let evYear = dtObj.isValidDate ? dtObj.yearBE.toString() : 'ไม่ระบุ';
+                            
+                            relatedEventsHTML = `<div class="mt-2 pt-2 border-t border-surface-200">
+                                <strong class="text-[10px] text-purple-700 block mb-2">📍 สรุปสถิติการเกิดเหตุซ้ำซ้อน:</strong>
+                                <div class="flex justify-between gap-1 mb-2">
+                                    <div class="flex-1 bg-white p-1.5 rounded border border-purple-200 text-center shadow-sm"><div class="text-[8px] text-purple-600 mb-0.5">ปี ${evYear} (ล่าสุด)</div><div class="text-sm font-bold text-purple-800">1 <span class="text-[8px] font-normal text-purple-600">ครั้ง</span></div></div>
+                                    <div class="flex-1 bg-surface-50 p-1.5 rounded border border-surface-200 text-center shadow-sm"><div class="text-[8px] text-slate-500 mb-0.5">ประวัติปีก่อนหน้า</div><div class="text-sm font-bold text-slate-700">${totalRepeatCount - 1} <span class="text-[8px] font-normal text-slate-500">ครั้ง</span></div></div>
+                                </div>
+                                <div class="p-1.5 bg-surface-50 rounded-md border border-surface-200 shadow-sm relative">
+                                    <div class="flex justify-between items-start mb-1 border-b border-surface-100 pb-1"><span class="font-bold text-[9px] text-brand-700">${singleDay.date} | ${singleDay.rows[0].accident_time || ''} น.</span><span class="text-[8px] font-mono text-slate-500">ID: ${singleDay.event_ids.filter(id=>id).join(', ') || '-'}</span></div>
+                                    <div class="text-[9px] text-slate-600 mb-0.5"><span class="font-bold text-slate-500">พาหนะ:</span> ${singleDay.vehicles.map(v => `<span class="bg-orange-50 text-orange-700 border border-orange-200 px-1 rounded mr-1 inline-block mt-0.5">${v.trim()}</span>`).join('')}</div>
+                                    <div class="text-[9px] text-slate-600"><span class="font-bold text-slate-500">ผลลัพธ์:</span> ${singleDay.total_dead > 0 ? `<b class="text-red-600">เสียชีวิต ${singleDay.total_dead} ราย</b>` : 'บาดเจ็บ/ทรัพย์สิน'}</div>
+                                </div>
+                            </div>`;
+                        } else {
+                            let titleText = isBlackspotLocation ? `<strong class="text-[10px] text-purple-700">📍 ประวัติการเกิดเหตุ (แสดง ${uniqueDays.length} เหตุการณ์ล่าสุด):</strong>` : `<strong class="text-[10px] text-blue-600">📍 รายละเอียดยานพาหนะที่เกี่ยวข้อง:</strong>`;
+                            if (uniqueDays.length === 1 && !hasMultiVehicle) titleText = '';
+
+                            relatedEventsHTML = `<div class="mt-2 pt-2 border-t border-surface-200">${titleText}<ul class="text-[9px] text-slate-600 list-none pl-0 mt-2 max-h-40 overflow-y-auto pr-1 space-y-1.5">`;
+                            uniqueDays.sort((a,b) => { return new Date(b.rows[0].accident_date) - new Date(a.rows[0].accident_date); }); // เรียงวันที่แบบง่าย
+
+                            uniqueDays.forEach(day => {
+                                let dtObj = parseStrictDateTime(day.rows[0].accident_date, day.rows[0].accident_time);
+                                let evYear = dtObj.isValidDate ? dtObj.yearBE.toString() : 'ไม่ระบุ';
+                                let yearBadge = (currentFilterYear !== '' && evYear === currentFilterYear) ? `<span class="bg-red-100 text-red-600 border border-red-200 px-1.5 py-0.5 rounded text-[8px] font-bold">ปี ${evYear}</span>` : `<span class="bg-slate-100 text-slate-500 border border-slate-200 px-1.5 py-0.5 rounded text-[8px] font-bold">ปี ${evYear}</span>`;
+
+                                // นับรถในวันนั้น (ใช้ Regex แบบเดียวกัน)
+                                let dailyVehCount = day.rows.reduce((sum, r) => {
+                                    let vStr = String(r.vehicle_type || r.Vehicle_Type || r.vehicle_group || r.ยานพาหนะ || '').trim();
+                                    return sum + ((vStr && vStr !== 'ไม่ระบุ' && vStr !== '-') ? vStr.split(/[,/|]|และ/).filter(v => v.trim() !== '').length : 1);
+                                }, 0);
+                                dailyVehCount = Math.max(dailyVehCount, day.rows.length);
+
+                                let vehListStr = day.vehicles.map(v => {
+                                    return v.split(/[,/|]|และ/).map(sv => `<span class="bg-orange-50 text-orange-700 border border-orange-200 px-1 rounded mr-1 inline-block mt-0.5">${sv.trim()}</span>`).join('');
+                                }).join('');
+                                
+                                let involveBadge = dailyVehCount > 1 ? `<span class="bg-blue-100 text-blue-700 border border-blue-200 px-1 py-0.5 rounded text-[8px] font-bold ml-1">คู่กรณี ${dailyVehCount} คัน</span>` : '';
+                                let displayIds = Array.from(new Set(day.event_ids)).filter(id => id).join(', ') || 'ไม่มี ID';
+
+                                relatedEventsHTML += `<li class="p-1.5 bg-surface-50 rounded-md border border-surface-200 shadow-sm relative">
+                                    <div class="flex justify-between items-start mb-1"><span class="font-bold text-brand-700">${day.date}</span><div class="flex items-center">${yearBadge}</div></div>
+                                    <div class="flex justify-between items-center mb-1 border-b border-surface-100 pb-1"><span class="text-[8px] text-slate-500 font-mono truncate max-w-[120px]">ID: ${displayIds} ${involveBadge}</span><span>${day.total_dead > 0 ? `<b class="text-red-600">ตาย ${day.total_dead}</b>` : 'เจ็บ'}</span></div>
+                                    <div class="text-[9px] text-slate-600 mb-1 leading-tight"><span class="font-bold text-slate-500">พาหนะ:</span> <div class="mt-0.5">${vehListStr}</div></div>
+                                </li>`;
+                            });
+
+                            relatedEventsHTML += `</ul></div>`;
+                        }
+                    }
+
+                    marker.bindPopup(`<div class="font-sans p-1 min-w-[180px] max-w-[250px]"><strong class="text-brand-900 block border-b border-surface-200 pb-2 mb-2 text-xs">Event: ${displayItem.event_id || 'ไม่ระบุ'}</strong><div class="text-[10px] text-slate-600 mb-1">📅 วันที่: ${displayItem.accident_date} | ${displayItem.accident_time} น.</div><div class="text-[10px] text-slate-600 mb-1">💀 เสียชีวิต: ${d} ราย | 🤕 บาดเจ็บ: ${i} คน</div><div class="text-[10px] text-slate-600 mb-1">🔍 สาเหตุ: <span class="font-bold text-brand-600">${cause}</span></div>${badge} ${customBadge} ${threatBadge}${relatedEventsHTML}</div>`);
+                    mainMarkerCluster.addLayer(marker);
+                });
+
                 if (typeof L.heatLayer !== 'undefined') {
-                heatLayer = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 14});
-                if(AppState.currentMapMode === 'heat') mainMap.addLayer(heatLayer);
-            }
-
-            if(valid > 0) {
-                // เช็คเงื่อนไขเช่นเดียวกับจุดที่ 1
-                if (!province || province === 'all' || province === '') {
-                    mainMap.setView([15.8700, 100.9925], 6);
-                } else {
-                    mainMap.fitBounds(bounds, { padding: [50,50], maxZoom: 14 });
+                    heatLayer = L.heatLayer(heatPoints, {radius: 25, blur: 15, maxZoom: 14});
+                    if(AppState.currentMapMode === 'heat') mainMap.addLayer(heatLayer);
                 }
-            }
 
-            const safeSetCount = (id, count) => { 
+                if(valid > 0) {
+                    if (!province || province === 'all' || province === '') {
+                        mainMap.setView([15.8700, 100.9925], 6);
+                    } else {
+                        mainMap.fitBounds(bounds, { padding: [50,50], maxZoom: 14 });
+                    }
+                }
+
+                const safeSetCount = (id, count) => { 
                     const el = document.getElementById(id); 
                     if(el) {
                         el.innerText = count > 0 ? count.toLocaleString() + ' จุด' : '-';
@@ -1787,16 +1956,11 @@
                 };
                 
                 const legendTitle = document.getElementById('map-legend-title');
-                if(legendTitle) {
-                    if (counts.total > 0) {
-                        legendTitle.innerHTML = `สัญลักษณ์และสถิติ (แสดงผลรวม <span class="text-brand-600">${counts.total.toLocaleString()}</span> จุด)`;
-                    } else {
-                        legendTitle.innerHTML = `สัญลักษณ์และสถิติ (ไม่พบข้อมูลตามเงื่อนไข)`;
-                    }
-                }
+                if(legendTitle) legendTitle.innerHTML = counts.total > 0 ? `สัญลักษณ์และสถิติ (แสดงผลรวม <span class="text-brand-600">${counts.total.toLocaleString()}</span> จุด)` : `สัญลักษณ์และสถิติ (ไม่พบข้อมูล)`;
 
                 safeSetCount('legend-count-major', counts.major);
                 safeSetCount('legend-count-blackspot', counts.blackspot);
+                safeSetCount('legend-count-multi', counts.multi); // 🚀 ส่งยอดคู่กรณีไปแสดงที่กล่องสถิติ
                 safeSetCount('legend-count-fatal', counts.fatal);
                 safeSetCount('legend-count-severe', counts.severe);
                 safeSetCount('legend-count-killing', counts.killing);
@@ -1806,7 +1970,8 @@
                 safeSetCount('legend-count-youth', counts.youth);
                 safeSetCount('legend-count-license', counts.license);
             }
-        };
+        }; // <--- 🚀 สำคัญมาก! ปีกกานี้จะปิดการทำงานของ MapController แบบสมบูรณ์ ป้องกันหน้าเว็บค้าง 100% ครับ
+
 
         const ViewRenderers = {
             dashSort: { key: 'acc', dir: 'desc' }, 
