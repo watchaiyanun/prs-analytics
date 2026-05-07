@@ -245,7 +245,7 @@
             
             <div class="w-px h-5 bg-surface-300 shrink-0 mx-2"></div>
             
-            <select id="filter-bureau" onchange="FilterController.handleBureauChange()" class="form-select text-sm rounded-md border-surface-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 w-full">
+            <select id="filter-bureau" onchange="FilterController.handleBureauChange()" class="bg-surface-50 border border-surface-300 text-slate-700 text-xs rounded-lg py-2 pl-3 pr-7 focus:ring-brand-500 focus:border-brand-500 cursor-pointer shrink-0 font-medium shadow-sm max-w-[160px]">
     <option value="">ภาพรวมประเทศ</option>
     <option value="กองบัญชาการตำรวจนครบาล">กองบัญชาการตำรวจนครบาล (บช.น.)</option>
     <option value="ตำรวจภูธรภาค 1">ตำรวจภูธรภาค 1 (ภ.1)</option>
@@ -892,26 +892,49 @@
 
                     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         <!-- กราฟที่ 1: Dynamic Time-Series Area Chart -->
-                        <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2">
-                            <h3 class="text-sm font-bold text-brand-900 mb-4 flex items-center gap-2"><span class="material-symbols-rounded text-brand-600">show_chart</span> 1. แนวโน้มการเกิดอุบัติเหตุตามไทม์ไลน์ (Time-Series Trend)</h3>
-                            <div class="w-full h-[400px] echart-container" id="chart-trend"></div>
-                            <p class="text-[10px] text-slate-400 mt-2 text-center">*สามารถใช้เมาส์คลิกแล้วลากคลุม (Drag to Zoom) ที่กราฟเพื่อเจาะลึกดูข้อมูลแบบรายวันได้</p>
-                        </div>
+                        <div id="container-trend-chart" class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2 overflow-hidden flex flex-col">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
+        <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2">
+            <span class="material-symbols-rounded text-brand-600">stacked_line_chart</span> 1. แนวโน้มการเกิดอุบัติเหตุตามไทม์ไลน์
+        </h3>
+        
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <select id="filter-trend-metric" onchange="ChartController.renderTrendChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer flex-1 sm:flex-none">
+                <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
+                <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
+                <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
+            </select>
+            
+            <button onclick="ChartController.toggleFullscreen('container-trend-chart')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ (Fullscreen)">
+                <span class="material-symbols-rounded text-xl">fullscreen</span>
+            </button>
+        </div>
 
-<div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2">
-                            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
-                                <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2">
-                                    <span class="material-symbols-rounded text-brand-600">stacked_line_chart</span> 2. เปรียบเทียบแนวโน้มรายปี (Yearly Overlay Trend)
-                                </h3>
-                                <select id="filter-yearly-trend-metric" onchange="ChartController.renderYearlyTrendChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer w-full sm:w-auto">
-                                    <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
-                                    <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
-                                    <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
-                                </select>
-                            </div>
-                            <div class="w-full h-[400px] echart-container" id="chart-yearly-trend"></div>
-                            <p class="text-[10px] text-slate-400 mt-2 text-center">*ใช้เมาส์ลากคลุม (Drag to Zoom) เพื่อเจาะลึกดูข้อมูลรายวันในช่วงเวลาที่ต้องการ</p>
-                        </div>
+    </div>
+    
+    <div class="w-full flex-1 min-h-[400px] echart-container" id="chart-trend"></div>
+    <p class="text-[10px] text-slate-400 mt-2 text-center">*ใช้เมาส์ลากคลุม (Drag to Zoom) เพื่อดูข้อมูลรายวันในช่วงเวลาที่ต้องการ</p>
+</div>
+
+<div id="container-yearly-trend" class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2 overflow-hidden flex flex-col">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
+        <h3 class="text-sm font-bold text-brand-900 flex items-center gap-2">
+            <span class="material-symbols-rounded text-brand-600">stacked_line_chart</span> 2. เปรียบเทียบแนวโน้มรายปี (Yearly Overlay Trend)
+        </h3>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <select id="filter-yearly-trend-metric" onchange="ChartController.renderYearlyTrendChart(AppState.mapData)" class="bg-white border border-surface-300 text-xs font-bold text-brand-700 rounded-lg py-1.5 pl-3 pr-8 focus:ring-brand-500 shadow-sm cursor-pointer flex-1 sm:flex-none">
+                <option value="acc">แสดงข้อมูล: การเกิดเหตุ (ครั้ง)</option>
+                <option value="dead">แสดงข้อมูล: ผู้เสียชีวิต (ราย)</option>
+                <option value="inj">แสดงข้อมูล: ผู้บาดเจ็บ (คน)</option>
+            </select>
+            <button onclick="ChartController.toggleFullscreen('container-yearly-trend')" class="p-1.5 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-200 bg-white shrink-0" title="แสดงเต็มหน้าจอ (Fullscreen)">
+                <span class="material-symbols-rounded text-xl">fullscreen</span>
+            </button>
+        </div>
+    </div>
+    <div class="w-full flex-1 min-h-[400px] echart-container" id="chart-yearly-trend"></div>
+    <p class="text-[10px] text-slate-400 mt-2 text-center">*ใช้เมาส์ลากคลุม (Drag to Zoom) เพื่อดูข้อมูลรายวันในช่วงเวลาที่ต้องการ</p>
+</div>
 
                         <!-- กราฟที่ 2: 3D Bar Chart -->
                         <div class="bg-white p-5 rounded-2xl border border-surface-200 shadow-sm xl:col-span-2">
@@ -1402,6 +1425,356 @@
             }
         };
 
+// ==========================================
+        // 🚀 MODULE: SummaryController (ยุทธวิธีจราจร / War Room)
+        // ==========================================
+        const SummaryController = {
+            charts: {},
+            
+            initDOM() {
+                const container = document.getElementById('summary-container');
+                if(!container) return;
+                container.innerHTML = `
+                    <div class="flex justify-between items-center mb-4 px-2">
+                        <div>
+                            <h2 class="text-2xl font-bold text-brand-900 flex items-center gap-3">
+                                <span class="material-symbols-rounded text-brand-600">assignment</span> สรุปยุทธวิธีจราจร (War Room)
+                                <span class="px-2 py-0.5 rounded text-[10px] bg-brand-100 text-brand-700 border border-brand-200 uppercase tracking-widest font-bold">Proactive Insights</span>
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">วิเคราะห์เจาะลึก 10 มิติ เพื่อการสั่งการและแก้ไขปัญหา (ประมวลผลจากข้อมูลล่าสุด)</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                        <div class="p-5 rounded-2xl border border-surface-200 shadow-sm bg-gradient-to-br from-white to-surface-50"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-1">1. ดัชนีความปลอดภัยพื้นที่</p><div class="flex items-end gap-2 relative z-10"><span class="text-3xl font-black text-brand-600" id="sm-score">-</span><span class="text-xs text-slate-400 mb-1">/100</span></div><p class="text-[10px] text-red-500 mt-2 font-bold flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">warning</span> ประเมินจากหมวกและแอลกอฮอล์</p></div>
+                        <div class="p-5 rounded-2xl border border-surface-200 shadow-sm bg-gradient-to-br from-white to-surface-50"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-1">2. เยาวชน < 18 ปี เกิดเหตุ</p><div class="flex items-end gap-2 relative z-10"><span class="text-3xl font-black text-orange-500" id="sm-youth">-</span><span class="text-xs text-slate-400 mb-1">ราย</span></div><p class="text-[10px] text-orange-600 mt-2 font-bold flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">info</span> คิดเป็น <span id="sm-youth-pct">-%</span> ของทั้งหมด</p></div>
+                        <div class="p-5 rounded-2xl border border-surface-200 shadow-sm bg-gradient-to-br from-white to-surface-50"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-1">3. คนเดินเท้า/จักรยาน</p><div class="flex items-end gap-2 relative z-10"><span class="text-3xl font-black text-emerald-500" id="sm-ped">-</span><span class="text-xs text-slate-400 mb-1">ราย</span></div><p class="text-[10px] text-emerald-600 mt-2 font-bold flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">trending_up</span> โอกาสตายเมื่อเกิดเหตุ <span id="sm-ped-pct">-%</span></p></div>
+                        <div class="p-5 rounded-2xl border border-surface-200 shadow-sm bg-gradient-to-br from-white to-surface-50"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-1">4. ชาวต่างชาติประสบเหตุ</p><div class="flex items-end gap-2 relative z-10"><span class="text-3xl font-black text-purple-500" id="sm-foreign">-</span><span class="text-xs text-slate-400 mb-1">ราย</span></div><p class="text-[10px] text-purple-600 mt-2 font-bold flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">public</span> เทียบสัดส่วนจากฐานข้อมูล</p></div>
+                        <div class="p-5 rounded-2xl border border-surface-200 shadow-sm bg-gradient-to-br from-white to-surface-50"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-1">5. ตัวคูณรุนแรง (กลางคืน)</p><div class="flex items-end gap-2 relative z-10"><span class="text-3xl font-black text-red-500" id="sm-night-mult">-</span></div><p class="text-[10px] text-red-500 mt-2 font-bold leading-tight" id="sm-night-txt">กลางคืนตายสูงกว่ากลางวัน x เท่า</p></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+                        <div class="xl:col-span-2 bg-brand-50 border border-brand-200 rounded-2xl shadow-sm p-6 flex flex-col justify-center">
+                            <div class="flex flex-col sm:flex-row gap-4 items-start">
+                                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-brand-200 shadow-sm shrink-0"><span class="material-symbols-rounded text-3xl text-brand-600">psychology</span></div>
+                                <div class="flex-1">
+                                    <h2 class="text-sm font-bold text-brand-700 uppercase mb-2 flex flex-wrap items-center gap-2">AI Commander Insight <span class="bg-brand-200 text-brand-800 px-2 py-0.5 rounded text-[9px]">ข้อเสนอแนะเชิงยุทธวิธี</span></h2>
+                                    <p class="text-sm text-brand-900 mb-4 leading-relaxed" id="sm-ai-text">กำลังประมวลผลข้อมูลเพื่อร่างข้อสั่งการ...</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div class="bg-white p-3 rounded-lg border border-brand-100 shadow-sm"><p class="text-[10px] text-slate-500 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">schedule</span> เวลาเฝ้าระวังสูงสุด</p><p class="text-sm font-bold text-orange-500 mt-1" id="sm-ai-time">-</p></div>
+                                        <div class="bg-white p-3 rounded-lg border border-brand-100 shadow-sm"><p class="text-[10px] text-slate-500 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">add_road</span> กายภาพถนนเสี่ยงสุด</p><p class="text-sm font-bold text-cyan-600 mt-1" id="sm-ai-road">-</p></div>
+                                        <div class="bg-white p-3 rounded-lg border border-brand-100 shadow-sm"><p class="text-[10px] text-slate-500 flex items-center gap-1"><span class="material-symbols-rounded text-[14px]">gavel</span> พาหนะเฝ้าระวัง</p><p class="text-sm font-bold text-red-500 mt-1" id="sm-ai-veh">-</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-6">
+                            <div class="flex-1 flex flex-col h-full">
+                                <h2 class="text-sm font-bold text-emerald-600 uppercase mb-1 flex items-center gap-2"><span class="material-symbols-rounded">health_and_safety</span> เป้าหมายรักษาชีวิต</h2>
+                                <p class="text-[10px] text-slate-500 mb-6">หากบังคับใช้กฎหมายได้ 100% จะสามารถปกป้องชีวิตได้:</p>
+                                <div id="sm-lifesaving" class="space-y-6 flex-1 flex flex-col justify-center"><div class="animate-pulse w-full h-8 bg-slate-200 rounded-lg"></div><div class="animate-pulse w-full h-8 bg-slate-200 rounded-lg"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h2 class="text-sm font-bold text-brand-900 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span class="material-symbols-rounded text-brand-600">directions_car</span> Vehicle Threat Profiles (โปรไฟล์ความเสี่ยงยานพาหนะ)
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="sm-vehicles">
+                            <div class="bg-white rounded-2xl border border-surface-200 shadow-sm animate-pulse h-[200px]"></div><div class="bg-white rounded-2xl border border-surface-200 shadow-sm animate-pulse h-[200px]"></div><div class="bg-white rounded-2xl border border-surface-200 shadow-sm animate-pulse h-[200px]"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-3 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-cyan-600 align-bottom mr-1">calendar_month</span> ฮีทแมปปฏิทินเกิดเหตุ</h3><p class="text-[10px] text-slate-500 mb-2">จุดความร้อนการเกิดเหตุทั้งปี (แสดงจำนวน/%)</p><div id="sm-ch-cal" class="w-full flex-1 min-h-[250px] overflow-x-auto" style="scrollbar-width: none;"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-orange-500 align-bottom mr-1">schedule</span> นาฬิกาเฝ้าระวัง 24 ชม.</h3><p class="text-[10px] text-slate-500 mb-2">ความถี่เกิดเหตุ แยกตามเวลา</p><div id="sm-ch-clock" class="w-full flex-1 min-h-[300px]"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1"><span class="material-symbols-rounded text-red-500 align-bottom mr-1">celebration</span> 7 วันอันตราย vs วันปกติ</h3><p class="text-[10px] text-slate-500 mb-2">เปรียบเทียบอัตราการเสียชีวิต (Lethality Rate) ช่วงเทศกาล</p><div id="sm-ch-holiday" class="w-full flex-1 min-h-[300px]"></div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">ลูกโซ่เหตุการณ์ (Sankey)</h3><p class="text-[10px] text-slate-500 mb-2">ถนน ➔ พฤติกรรม ➔ ผู้ประสบเหตุ</p><div id="sm-ch-sankey" class="w-full flex-1 min-h-[350px]"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">5 พื้นที่อัตราตายสูงสุด (Red Zones)</h3><p class="text-[10px] text-slate-500 mb-2">จัดอันดับจากอัตราส่วนการตายเทียบกับจำนวนเกิดเหตุ</p><div id="sm-ch-redzone" class="w-full flex-1 min-h-[350px]"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 lg:col-span-2 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">เมทริกซ์จุดสกัด (Deadly Matrix)</h3><p class="text-[10px] text-slate-500 mb-2">พฤติกรรมเสี่ยง x ลักษณะถนน</p><div id="sm-ch-matrix" class="w-full flex-1 min-h-[350px] overflow-x-auto" style="scrollbar-width: none;"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">กรวยรอดชีวิต (นิรภัย)</h3><p class="text-[10px] text-slate-500 mb-2">เทียบโอกาสตาย สวมหมวก vs ไม่สวมหมวก</p><div id="sm-ch-funnel" class="w-full flex-1 min-h-[300px]"></div></div>
+                        <div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 overflow-hidden"><h3 class="font-bold text-brand-900 text-sm mb-1">เรดาร์สภาพแวดล้อม</h3><p class="text-[10px] text-slate-500 mb-2">ปัจจัยร่วมด้านกายภาพที่ไม่ใช่พฤติกรรมคน</p><div id="sm-ch-radar" class="w-full flex-1 min-h-[300px]"></div></div>
+                    </div>
+                `;
+            },
+
+            resize() { Object.values(this.charts).forEach(ch => { if(ch) ch.resize(); }); },
+
+            render(data) {
+                if(!data || data.length === 0) return;
+                if(!document.getElementById('sm-ch-cal')) this.initDOM();
+
+                const totalAcc = data.length || 1; 
+                let totalDeaths = 0, youths = 0, peds = 0, pedDeaths = 0, foreign = 0;
+                let noHelmets = 0, drunks = 0;
+                let dayAcc = 0, dayDeath = 0, nightAcc = 0, nightDeath = 0;
+                const factors = {}; const vehicles = {}; const times = {}; const roads = {};
+                
+                data.forEach(d => {
+                    let deaths = parseInt(d.deaths) || (parseInt(d.max_severity_score) === 10 ? 1 : 0);
+                    totalDeaths += deaths;
+                    
+                    let safeAges = String(d.ages || '');
+                    let safeUserTypes = String(d.user_types || d.vehicle_type || '');
+                    let safeNationalities = String(d.nationalities || '');
+                    let safeHelmets = String(d.helmet_usages || '');
+                    let safeAlcohol = String(d.alcohol_test_result || d.primary_factor || '');
+                    let safeFactor = String(d.primary_factor || d.driving_behavior_factor || 'ไม่ระบุ').trim();
+                    let safeVeh = String(d.vehicle_type || 'ไม่ระบุ').split(',')[0].trim();
+                    let safeRoad = String(d.road_characteristic || 'ไม่ระบุ').trim();
+
+                    if(safeAges) { safeAges.split(',').forEach(a => { let ageNum = parseInt(a); if(!isNaN(ageNum) && ageNum < 18) youths++; }); }
+                    if(safeUserTypes.includes('เดินเท้า')) { peds++; if(deaths>0) pedDeaths++; }
+                    if(safeNationalities && !safeNationalities.toLowerCase().includes('thai') && !safeNationalities.includes('ไทย')) foreign++;
+                    if(safeHelmets.includes('ไม่สวม')) noHelmets++;
+                    if(safeAlcohol.includes('เมา')) drunks++;
+
+                    let dtObj = parseStrictDateTime(d.accident_date, d.accident_time);
+                    if(dtObj.isValidTime) {
+                        times[dtObj.hour] = (times[dtObj.hour]||0)+1;
+                        if(dtObj.hour>=6 && dtObj.hour<=17) { dayAcc++; dayDeath+=deaths; } else { nightAcc++; nightDeath+=deaths; }
+                    }
+                    
+                    factors[safeFactor] = (factors[safeFactor]||0)+1;
+                    vehicles[safeVeh] = (vehicles[safeVeh]||0)+1;
+                    roads[safeRoad] = (roads[safeRoad]||0)+1;
+                });
+
+                const safePct = (part, whole) => whole > 0 ? ((part/whole)*100).toFixed(1) : 0;
+                let aiScore = 100 - ((noHelmets/totalAcc)*30) - ((drunks/totalAcc)*20);
+                document.getElementById('sm-score').innerText = isNaN(aiScore) ? '-' : Math.max(0, Math.round(aiScore));
+                document.getElementById('sm-youth').innerText = youths.toLocaleString();
+                document.getElementById('sm-youth-pct').innerText = safePct(youths, totalAcc) + '%';
+                document.getElementById('sm-ped').innerText = peds.toLocaleString();
+                document.getElementById('sm-ped-pct').innerText = safePct(pedDeaths, peds) + '%';
+                document.getElementById('sm-foreign').innerText = foreign.toLocaleString();
+                let dayRate = dayAcc > 0 ? dayDeath/dayAcc : 0;
+                let nightRate = nightAcc > 0 ? nightDeath/nightAcc : 0;
+                let mult = dayRate > 0 ? (nightRate/dayRate).toFixed(1) : '1.0';
+                document.getElementById('sm-night-mult').innerText = mult + 'x';
+                document.getElementById('sm-night-txt').innerText = `กลางคืนตายสูงกว่ากลางวัน ${mult} เท่า`;
+                
+                let topVeh = Object.keys(vehicles).sort((a,b)=>vehicles[b]-vehicles[a])[0] || 'รถจักรยานยนต์';
+                let topFac = Object.keys(factors).sort((a,b)=>factors[b]-factors[a])[0] || 'ขับเร็วเกินกำหนด';
+                let topRoad = Object.keys(roads).sort((a,b)=>roads[b]-roads[a])[0] || 'ทางตรง';
+                let topTime = Object.keys(times).sort((a,b)=>times[b]-times[a])[0] || '18';
+                
+                let topTimeStr = String(topTime).padStart(2, '0');
+                let endTimeStr = String((parseInt(topTime) + 3) % 24).padStart(2, '0');
+                document.getElementById('sm-ai-text').innerHTML = `ข้อมูลบ่งชี้ว่า <b>${topVeh}</b> เป็นยานพาหนะเสี่ยงสูงสุด โดยพฤติกรรมหลักคือ <b>${topFac}</b> <br>สั่งการกวดขันข้อหานี้บนพื้นที่ <b>${topRoad}</b> เน้นเวลา <b>${topTimeStr}:00 - ${endTimeStr}:00 น.</b>`;
+                document.getElementById('sm-ai-time').innerText = `${topTimeStr}:00 น.`;
+                document.getElementById('sm-ai-road').innerText = topRoad;
+                document.getElementById('sm-ai-veh').innerText = topVeh;
+
+                document.getElementById('sm-lifesaving').innerHTML = `
+                    <div><div class="flex justify-between text-xs mb-1 text-slate-600"><span>กวดขัน <b>หมวกนิรภัย</b></span><span class="text-emerald-600 font-bold">ลดเจ็บ/ตาย ${noHelmets} ราย (${safePct(noHelmets, totalAcc)}%)</span></div><div class="w-full bg-surface-200 rounded-full h-2 border border-surface-300"><div class="bg-emerald-500 h-2 rounded-full" style="width: ${safePct(noHelmets, totalAcc)}%"></div></div></div>
+                    <div><div class="flex justify-between text-xs mb-1 text-slate-600"><span>กวดขัน <b>เมาแล้วขับ</b></span><span class="text-purple-600 font-bold">ลดเกิดเหตุ ${drunks} ครั้ง (${safePct(drunks, totalAcc)}%)</span></div><div class="w-full bg-surface-200 rounded-full h-2 border border-surface-300"><div class="bg-purple-500 h-2 rounded-full" style="width: ${safePct(drunks, totalAcc)}%"></div></div></div>
+                `;
+                
+                const getVehStats = (vKeyword) => {
+                    const vehData = data.filter(d => String(d.vehicle_type).includes(vKeyword));
+                    const count = vehData.length;
+                    const dCount = vehData.filter(d => (parseInt(d.deaths) || (parseInt(d.max_severity_score) === 10 ? 1 : 0)) > 0).length;
+                    let fCount = {};
+                    vehData.forEach(d => { 
+                        let f = String(d.primary_factor || d.driving_behavior_factor || 'ไม่ระบุ').trim(); 
+                        fCount[f] = (fCount[f]||0)+1; 
+                    });
+                    let vTopFac = Object.keys(fCount).sort((a,b)=>fCount[b]-fCount[a])[0] || 'ไม่พบข้อมูล';
+                    
+                    return { count, pct: safePct(count, totalAcc), dCount, dPct: safePct(dCount, count), topFac: vTopFac };
+                };
+                
+                const mcStats = getVehStats('จักรยานยนต์');
+                const pkStats = getVehStats('กระบะ');
+                const crStats = getVehStats('เก๋ง');
+                
+                const buildVehCard = (v, cHex, cClass, i, s) => `<div class="bg-white rounded-2xl border border-surface-200 shadow-sm p-5 !border-t-4" style="border-top-color: ${cHex}"><div class="flex justify-between items-start mb-4 border-b border-surface-100 pb-4"><div><h3 class="text-lg font-black text-brand-900">${v}</h3><p class="text-[10px] text-slate-500 uppercase tracking-widest mt-1">เกิดเหตุรวม: ${s.count.toLocaleString()} คัน (${s.pct}%)</p></div><div class="bg-brand-50 p-2 rounded-lg border border-brand-100"><span class="material-symbols-rounded text-3xl text-${cClass}">${i}</span></div></div><div class="space-y-4"><div><div class="flex justify-between text-[11px] font-bold text-slate-600 mb-1"><span>พฤติกรรม: ${s.topFac.substring(0,25)}</span></div><div class="w-full bg-surface-200 rounded-full h-1.5"><div class="bg-${cClass} h-1.5 rounded-full" style="width:60%"></div></div></div><div><div class="flex justify-between text-[11px] font-bold text-slate-600 mb-1"><span>อัตราเสียชีวิต (Lethality)</span><span class="text-${cClass} font-bold">${s.dCount} ราย (${s.dPct}%)</span></div><div class="w-full bg-surface-200 rounded-full h-1.5"><div class="bg-${cClass} h-1.5 rounded-full" style="width:${s.dPct}%"></div></div></div></div></div>`;
+                
+                document.getElementById('sm-vehicles').innerHTML = buildVehCard('รถจักรยานยนต์','#3b82f6','blue-500','two_wheeler', mcStats) + buildVehCard('รถกระบะ','#f59e0b','orange-500','local_shipping', pkStats) + buildVehCard('รถยนต์นั่งส่วนบุคคล','#10b981','emerald-500','directions_car', crStats);
+                
+                setTimeout(() => {
+                    const getCh = (id) => { 
+                        let dom = document.getElementById(id);
+                        if(!dom) return null;
+                        try {
+                            if(this.charts[id]) this.charts[id].dispose(); 
+                            this.charts[id] = echarts.init(dom); 
+                            return this.charts[id]; 
+                        } catch(e) { console.error('Echarts Init Error:', e); return null; }
+                    };
+                    
+                    const tClass = "echarts-tooltip";
+                    const txtColor = "#475569";
+                    const lineCol = "#e2e8f0";
+
+                    try {
+                        let chCal = getCh('sm-ch-cal');
+                        if(chCal) {
+                            let calMap = {}; 
+                            let plotYear = new Date().getFullYear().toString(); 
+
+                            data.forEach(d => { 
+                                let dtObj = parseStrictDateTime(d.accident_date, d.accident_time);
+                                if(dtObj.isValidDate) {
+                                    plotYear = dtObj.yearAD.toString();
+                                    let mStr = String(dtObj.month).padStart(2,'0');
+                                    let dStr = String(dtObj.day).padStart(2,'0');
+                                    let k = `${dtObj.yearAD}-${mStr}-${dStr}`;
+                                    calMap[k] = (calMap[k]||0) + 1;
+                                }
+                            });
+                            const getThaiDateStr = (dateStr) => {
+                                const parts = dateStr.split('-');
+                                const mNames = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+                                let yBE = parseInt(parts[0]) + 543; 
+                                return `${parseInt(parts[2])} ${mNames[parseInt(parts[1])]} ${yBE}`;
+                            };
+                            chCal.setOption({ 
+                                tooltip: { className: tClass, formatter: p => `<div class="font-bold text-slate-700 border-b border-surface-200 pb-1 mb-1">${getThaiDateStr(p.value[0])}</div>เกิดเหตุ: <b class="text-red-500 text-lg">${p.value[1]}</b> ครั้ง<br/><span class="text-[10px] text-slate-500">(${safePct(p.value[1], totalAcc)}% ของทั้งหมด)</span>` }, 
+                                visualMap: { type: 'piecewise', orient: 'horizontal', left: 'center', top: 0, pieces: [{min: 20, label: 'วิกฤต (>20)', color: '#ef4444'},{min: 10, max: 19, label: 'สูง (10-19)', color: '#f59e0b'},{min: 1, max: 9, label: 'ปกติ (1-9)', color: '#3b82f6'},{value: 0, label: 'ปลอดภัย (0)', color: '#f8fafc'}], textStyle: {color: txtColor, fontSize: 11}, itemGap: 20 },
+                                calendar: { top: 60, left: 40, right: 20, bottom: 20, cellSize: ['auto', 20], range: plotYear, itemStyle: { borderWidth: 3, borderColor: '#fff', color: '#f8fafc' }, yearLabel: {show:false}, dayLabel: { nameMap: ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'], color: txtColor, fontSize: 10 }, monthLabel: { nameMap: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'], color: txtColor, fontSize: 12, fontWeight: 'bold' }, splitLine: { lineStyle: { color: '#cbd5e1', width: 2 } } },
+                                series: { type: 'heatmap', coordinateSystem: 'calendar', data: Object.keys(calMap).map(k=>[k, calMap[k]]) } 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Calendar):", err); }
+
+                    try {
+                        let chClock = getCh('sm-ch-clock');
+                        if(chClock) {
+                            let clkData = Array(24).fill(0);
+                            data.forEach(d => { 
+                                let dtObj = parseStrictDateTime(d.accident_date, d.accident_time);
+                                if(dtObj.isValidTime){ clkData[dtObj.hour]++; } 
+                            });
+                            chClock.setOption({ 
+                                tooltip: {className:tClass, formatter:p=>`เวลา ${p.name}:00 น.<br><b>${p.value}</b> ครั้ง (${safePct(p.value, totalAcc)}%)`}, 
+                                polar: {radius:['15%','70%']}, 
+                                angleAxis: {type:'category', data:Array.from({length:24},(_,i)=>i.toString()), startAngle:90, axisLabel:{color:txtColor, fontSize:9}, splitLine: {lineStyle:{color:lineCol}}}, 
+                                radiusAxis:{show:false}, 
+                                series: [{type:'bar', data:clkData, coordinateSystem:'polar', itemStyle:{color:'#ef4444'}}] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Clock):", err); }
+
+                    try {
+                        let chHol = getCh('sm-ch-holiday');
+                        if(chHol) {
+                            let holData = data.filter(d => {
+                                let dtObj = parseStrictDateTime(d.accident_date, d.accident_time);
+                                if(!dtObj.isValidDate) return false;
+                                let m = dtObj.month; let day = dtObj.day;
+                                return (m===4 && day>=11 && day<=17) || (m===12 && day>=29) || (m===1 && day<=4);
+                            });
+                            let norData = data.filter(d => !holData.includes(d));
+                            let holDeathRate = holData.length>0 ? ((holData.filter(d=>parseInt(d.deaths)>0).length / holData.length) * 100).toFixed(1) : 0;
+                            let norDeathRate = norData.length>0 ? ((norData.filter(d=>parseInt(d.deaths)>0).length / norData.length) * 100).toFixed(1) : 0;
+                            
+                            chHol.setOption({ 
+                                tooltip: {className:tClass, trigger: 'axis', axisPointer: { type: 'shadow' }}, 
+                                grid:{left:'15%', right:'5%', bottom:'15%', top:'15%'}, 
+                                xAxis:{type:'category', data:['วันปกติ','เทศกาล (7 วันอันตราย)'], axisLabel:{color:txtColor}}, 
+                                yAxis:{type:'value', name:'% โอกาสเสียชีวิต', axisLabel: { formatter: '{value}%', color: '#94a3b8' }, splitLine:{lineStyle:{color:lineCol, type: 'dashed'}}}, 
+                                series:[{name:'Lethality Rate',type:'bar', barWidth: '40%', data:[{value:norDeathRate, itemStyle:{color:'#3b82f6', borderRadius:[4,4,0,0]}},{value:holDeathRate, itemStyle:{color:'#ef4444', borderRadius:[4,4,0,0]}}], label:{show:true, position:'top', formatter:'{c}%', color:'#1e293b', fontWeight: 'bold'}}] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Holiday):", err); }
+
+                    try {
+                        let chSankey = getCh('sm-ch-sankey');
+                        if(chSankey) {
+                            let linksObj = {}, nodesObj = {};
+                            data.slice(0, 1500).forEach(d => {
+                                let rRaw = String(d.road_characteristic || 'ทางตรง');
+                                let fRaw = String(d.primary_factor || d.driving_behavior_factor || 'ขับเร็ว');
+                                let rMatched = ['ทางตรง','ทางโค้ง','ทางแยก'].find(x => rRaw.includes(x)) || 'ทางตรง';
+                                let fMatched = ['ขับเร็ว','ตัดหน้า','เมาแล้วขับ', 'หลับใน'].find(x => fRaw.includes(x)) || 'ขับเร็ว';
+                                let out = (parseInt(d.deaths) || (parseInt(d.max_severity_score) === 10 ? 1 : 0)) > 0 ? 'เสียชีวิต' : 'บาดเจ็บ';
+                                
+                                nodesObj[rMatched]=1; nodesObj[fMatched]=1; nodesObj[out]=1; 
+                                linksObj[`${rMatched}|${fMatched}`]=(linksObj[`${rMatched}|${fMatched}`]||0)+1; 
+                                linksObj[`${fMatched}|${out}`]=(linksObj[`${fMatched}|${out}`]||0)+1;
+                            });
+                            let nodes = Object.keys(nodesObj).map(n => ({name: n})); 
+                            let links = Object.keys(linksObj).map(k => { let pts=k.split('|'); return {source:pts[0], target:pts[1], value:linksObj[k]}; });
+                            chSankey.setOption({ 
+                                tooltip: { className: tClass, formatter: p => p.dataType === 'edge' ? `${p.data.source} ➔ ${p.data.target}<br/><b class="text-blue-500">${p.data.value}</b> เคส` : p.name }, 
+                                series: { type: 'sankey', layout: 'none', data: nodes, links: links, lineStyle: { color: 'gradient', curveness: 0.5, opacity: 0.3 }, label: {color:txtColor, fontSize:10} } 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Sankey):", err); }
+
+                    try {
+                        let chRed = getCh('sm-ch-redzone');
+                        if(chRed) {
+                            let zMap={};
+                            data.forEach(d=>{ let z=String(d.police_station||d.province||'ไม่ระบุ'); zMap[z]=(zMap[z]||0)+1; });
+                            let zArr=Object.keys(zMap).map(k=>({name:k, acc:zMap[k], rate: ((data.filter(x=>(x.police_station===k||x.province===k)&&(parseInt(x.deaths)>0||parseInt(x.max_severity_score)===10)).length/zMap[k])*100).toFixed(1) })).sort((a,b)=>b.rate-a.rate).slice(0,5).reverse();
+                            chRed.setOption({ 
+                                tooltip:{className:tClass, trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => `${p[0].name}<br/>อัตราตาย: <b class="text-red-500">${p[0].value}%</b><br/>เกิดเหตุรวม: ${p[0].data.acc} ครั้ง`}, 
+                                grid:{left:'25%', right:'10%', bottom:'5%', top:'5%'}, xAxis:{type:'value',show:false}, yAxis:{type:'category', data:zArr.map(z=>z.name), axisLabel:{color:txtColor, width:80, overflow:'truncate', fontWeight: 'bold'}, axisLine: { show: false }, axisTick: { show: false }}, 
+                                series:[{type:'bar', data:zArr.map(z=>({value: z.rate, acc: z.acc})), itemStyle:{color: new echarts.graphic.LinearGradient(1, 0, 0, 0, [{offset: 0, color: '#ef4444'}, {offset: 1, color: '#7f1d1d'}]), borderRadius:[0,4,4,0]}, label:{show:true, position:'right', formatter: '{c}%', color:'#ef4444', fontWeight: 'bold'}}] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Redzone):", err); }
+
+                    try {
+                        let chMat = getCh('sm-ch-matrix');
+                        if(chMat) {
+                            const mRoads = ['ทางตรง','ทางโค้ง','ทางแยก'];
+                            const mFacs = ['ขับเร็ว','ตัดหน้า','เมา']; let matMap = {};
+                            data.forEach(d => { 
+                                let rRaw = String(d.road_characteristic || 'ทางตรง'); let fRaw = String(d.primary_factor || 'ขับเร็ว');
+                                let rLabel = mRoads.find(x => rRaw.includes(x)) || 'ทางตรง'; let fLabel = mFacs.find(x => fRaw.includes(x)) || 'ขับเร็ว';
+                                let k = `${mRoads.indexOf(rLabel)}|${mFacs.indexOf(fLabel)}`; matMap[k]=(matMap[k]||0)+1; 
+                            });
+                            let matData = Object.keys(matMap).map(k => { let pts=k.split('|'); return [parseInt(pts[0]), parseInt(pts[1]), matMap[k]]; });
+                            chMat.setOption({ 
+                                tooltip:{className:tClass, formatter: p => `${mRoads[p.value[0]]} + ${mFacs[p.value[1]]}<br/>เกิดเหตุ: <b class="text-red-500">${p.value[2]}</b> ครั้ง (${safePct(p.value[2], totalAcc)}%)`}, 
+                                grid:{left:'20%', bottom:'15%', top:'5%'}, xAxis:{type:'category', data:mRoads, axisLabel:{color:txtColor}}, yAxis:{type:'category', data:mFacs, axisLabel:{color:txtColor}}, 
+                                visualMap:{show:false, min:0, max:Math.max(totalAcc/5, 10), inRange:{color:['#f8fafc','#ef4444']}}, 
+                                series:[{type:'heatmap', data:matData, label:{show:true, color:'#1e293b'}, itemStyle:{borderColor:'#fff', borderWidth:2}}] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Matrix):", err); }
+
+                    try {
+                        let chFunnel = getCh('sm-ch-funnel');
+                        if(chFunnel) {
+                            const helmData = data.filter(d => String(d.vehicle_type).includes('จักรยานยนต์') && !String(d.helmet_usages).includes('ไม่สวม'));
+                            const noHelmData = data.filter(d => String(d.vehicle_type).includes('จักรยานยนต์') && String(d.helmet_usages).includes('ไม่สวม'));
+                            chFunnel.setOption({ 
+                                tooltip:{className:tClass, formatter: p => `${p.seriesName} <br/>${p.name}: <b class="text-slate-800">${p.value}</b> ราย (${safePct(p.value, p.seriesName==='สวมหมวก'?helmData.length:noHelmData.length)}%)`}, 
+                                series:[
+                                    {name:'สวมหมวก', type:'funnel', data:[{value:Math.max(helmData.length,1), name:'ประสบเหตุ', itemStyle:{color:'#0f766e'}}, {value:helmData.filter(d=>parseInt(d.deaths)>0).length, name:'ตาย (สวม)', itemStyle:{color:'#ef4444'}}], left:'5%', width:'40%', label:{fontSize:9, color:txtColor, formatter: '{b}\n{c} ({d}%)'}, itemStyle:{borderColor:'#fff'}}, 
+                                    {name:'ไม่สวม', type:'funnel', data:[{value:Math.max(noHelmData.length,1), name:'ประสบเหตุ', itemStyle:{color:'#0f766e'}}, {value:noHelmData.filter(d=>parseInt(d.deaths)>0).length, name:'ตาย (ไม่สวม)', itemStyle:{color:'#ef4444'}}], left:'55%', width:'40%', label:{fontSize:9, color:txtColor, formatter: '{b}\n{c} ({d}%)'}, itemStyle:{borderColor:'#fff'}}
+                                ] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Funnel):", err); }
+                    
+                    try {
+                        let chRadar = getCh('sm-ch-radar');
+                        if(chRadar) {
+                            let noLight = data.filter(d => String(d.light_condition).includes('ไม่มีไฟ')).length;
+                            let isCurve = data.filter(d => String(d.road_characteristic).includes('โค้ง')).length;
+                            let isRain = data.filter(d => String(d.environmental_factor).includes('ฝนตก')).length;
+                            chRadar.setOption({ 
+                                tooltip:{className:tClass, formatter: p => { let res=`${p.name}<br/>`; p.value.forEach((v,i)=> res+=`${['ถนนไม่มีไฟส่องสว่าง','ทางโค้ง','ฝนตก'][i]}: <b>${v}</b> ครั้ง (${safePct(v, totalAcc)}%)<br/>`); return res; }}, 
+                                radar:{indicator:[{name:'ถนนไม่มีไฟส่องสว่าง',max:Math.max(totalAcc,10)},{name:'ทางโค้ง',max:Math.max(totalAcc,10)},{name:'ฝนตก',max:Math.max(totalAcc,10)}], center:['50%','50%'], radius:'60%', axisName:{color:txtColor, fontSize:10}, splitLine:{lineStyle:{color:'rgba(59,130,246,0.2)'}}, splitArea: {show:false}}, 
+                                series:[{type:'radar', data:[{value:[noLight, isCurve, isRain], name:'ปัจจัยแวดล้อม', itemStyle:{color:'#06b6d4'}, areaStyle:{color:'rgba(6,182,212,0.3)'}}]}] 
+                            });
+                        }
+                    } catch(err) { console.error("Chart Error (Radar):", err); }
+
+                    this.resize();
+                }, 200); 
+            }
+        };
         const UIController = {
             toggleSidebar() {
                 const sidebar = document.getElementById('main-sidebar');
@@ -2503,26 +2876,28 @@
         const ChartController = {
             trendChart: null,
             bar3DChart: null,
-            yearlyTrendChart: null, // 🚀 1. เพิ่มตัวแปรใหม่
+            yearlyTrendChart: null,
             isInitialized: false,
 
             init() {
                 if(this.isInitialized) return;
+                
                 let trendDom = document.getElementById('chart-trend');
                 let bar3DDom = document.getElementById('chart-3d-bar');
-                let yearlyTrendDom = document.getElementById('chart-yearly-trend'); // 🚀 2. ค้นหา DOM กราฟใหม่
+                let yearlyTrendDom = document.getElementById('chart-yearly-trend');
 
                 if(trendDom && typeof echarts !== 'undefined') this.trendChart = echarts.init(trendDom);
                 if(bar3DDom && typeof echarts !== 'undefined') this.bar3DChart = echarts.init(bar3DDom);
-                if(yearlyTrendDom && typeof echarts !== 'undefined') this.yearlyTrendChart = echarts.init(yearlyTrendDom); // 🚀 3. Init กราฟใหม่
+                if(yearlyTrendDom && typeof echarts !== 'undefined') this.yearlyTrendChart = echarts.init(yearlyTrendDom);
 
+                this.setupFullscreenListener(); // เรียกใช้ตัวดักจับ Fullscreen
                 this.isInitialized = true;
             },
 
             resize() {
                 if(this.trendChart) this.trendChart.resize();
                 if(this.bar3DChart) this.bar3DChart.resize();
-                if(this.yearlyTrendChart) this.yearlyTrendChart.resize(); // 🚀 4. สั่ง Resize ให้กราฟใหม่
+                if(this.yearlyTrendChart) this.yearlyTrendChart.resize();
             },
 
             renderCharts(data) {
@@ -2531,6 +2906,35 @@
                 this.renderTrendChart(data);
                 this.renderYearlyTrendChart(data); // 🚀 5. เรียก Render กราฟใหม่แทรกตรงกลาง
                 this.render3DBarChart(data);
+            },
+
+// เพิ่มฟังก์ชันที่ 1: สำหรับกดสลับเข้า-ออก Fullscreen
+            toggleFullscreen(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                if (!document.fullscreenElement) {
+                    container.requestFullscreen().catch(err => {
+                        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            },
+
+            // เพิ่มฟังก์ชันที่ 2: ดักจับตอนหน้าจอเปลี่ยนขนาด เพื่อให้กราฟขยายตามแบบสมบูรณ์
+            setupFullscreenListener() {
+                if(this.isFullscreenListenerSet) return;
+                document.addEventListener('fullscreenchange', () => {
+                    // หน่วงเวลาเล็กน้อยให้ CSS ขยายเสร็จก่อนสั่งกราฟ Resize
+                    setTimeout(() => {
+                        this.resize();
+                        if(typeof SummaryController !== 'undefined') SummaryController.resize();
+                    }, 200);
+                });
+                this.isFullscreenListenerSet = true;
             },
 
             renderTrendChart(data) {
@@ -2618,7 +3022,7 @@
                 this.bar3DChart.setOption(option);
             },
 
-            // 🚀 6. ฟังก์ชันใหม่สำหรับกราฟเปรียบเทียบปีแบบพื้นที่ (Area Chart) พร้อมไล่เฉดสี
+            // 🚀 ฟังก์ชันที่แก้ไข: แยกเฉดสีในแต่ละปีเพื่อให้ดูข้อมูลได้ง่ายขึ้น
             renderYearlyTrendChart(data) {
                 if(!this.yearlyTrendChart) return;
                 if(!data || data.length === 0) return;
@@ -2626,18 +3030,32 @@
                 const metricEl = document.getElementById('filter-yearly-trend-metric');
                 const metric = metricEl ? metricEl.value : 'acc';
                 
-                // 🎨 1. กำหนดโทนสีและเฉดสีตามประเภทข้อมูลที่เลือก
-                let baseColor = '#3b82f6'; // สีน้ำเงิน (การเกิดเหตุ)
-                let areaColorTop = 'rgba(59, 130, 246, 0.4)';
-                
-                if(metric === 'dead') {
-                    baseColor = '#ef4444'; // สีแดง (เสียชีวิต)
-                    areaColorTop = 'rgba(239, 68, 68, 0.4)';
-                } else if(metric === 'inj') {
-                    baseColor = '#f59e0b'; // สีส้ม (บาดเจ็บ)
-                    areaColorTop = 'rgba(245, 158, 11, 0.4)';
-                }
+                // 🎨 กำหนดชุดเฉดสีแยกตามประเภท (รองรับสูงสุด 5 ปีต่อประเภท)
+                const palettes = {
+                    acc: [
+                        { line: '#2563eb', area: 'rgba(37, 99, 235, 0.4)' }, // Blue
+                        { line: '#0ea5e9', area: 'rgba(14, 165, 233, 0.4)' }, // Sky
+                        { line: '#6366f1', area: 'rgba(99, 102, 241, 0.4)' }, // Indigo
+                        { line: '#06b6d4', area: 'rgba(6, 182, 212, 0.4)' }, // Cyan
+                        { line: '#1d4ed8', area: 'rgba(29, 78, 216, 0.4)' }  // Dark Blue
+                    ],
+                    dead: [
+                        { line: '#ef4444', area: 'rgba(239, 68, 68, 0.4)' },  // Red
+                        { line: '#f43f5e', area: 'rgba(244, 63, 94, 0.4)' },  // Rose
+                        { line: '#b91c1c', area: 'rgba(185, 28, 28, 0.4)' },  // Dark Red
+                        { line: '#ec4899', area: 'rgba(236, 72, 153, 0.4)' }, // Pink
+                        { line: '#991b1b', area: 'rgba(153, 27, 27, 0.4)' }  // Maroon
+                    ],
+                    inj: [
+                        { line: '#f59e0b', area: 'rgba(245, 158, 11, 0.4)' }, // Amber
+                        { line: '#fb923c', area: 'rgba(251, 146, 60, 0.4)' }, // Orange
+                        { line: '#d97706', area: 'rgba(217, 119, 6, 0.4)' },  // Dark Orange
+                        { line: '#eab308', area: 'rgba(234, 179, 8, 0.4)' },  // Yellow
+                        { line: '#b45309', area: 'rgba(180, 83, 9, 0.4)' }   // Brownish Orange
+                    ]
+                };
 
+                const currentPalette = palettes[metric] || palettes.acc;
                 const mNames = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
                 const xDays = [];
                 const daysInMonth = [31,29,31,30,31,30,31,31,30,31,30,31];
@@ -2651,61 +3069,50 @@
                 data.forEach(row => {
                     let dtObj = parseStrictDateTime(row.accident_date, row.accident_time);
                     if(!dtObj.isValidDate) return;
-                    
                     let yearStr = dtObj.yearBE.toString();
                     let dayKey = `${String(dtObj.day).padStart(2,'0')} ${mNames[dtObj.month-1]}`;
-                    
                     if(!yearMap[yearStr]) {
                         yearMap[yearStr] = {};
                         xDays.forEach(day => yearMap[yearStr][day] = 0);
                     }
-                    
-                    let val = 0;
-                    if(metric === 'acc') val = 1;
-                    else if(metric === 'dead') val = parseInt(row.deaths) || (parseInt(row.max_severity_score) === 10 ? 1 : 0);
-                    else if(metric === 'inj') val = parseInt(row.injuries) || 0;
-                    
+                    let val = (metric === 'acc') ? 1 : 
+                              (metric === 'dead' ? (parseInt(row.deaths) || (parseInt(row.max_severity_score) === 10 ? 1 : 0)) : 
+                              (parseInt(row.injuries) || 0));
                     yearMap[yearStr][dayKey] += val;
                 });
 
                 let years = Object.keys(yearMap).sort();
-                let seriesData = years.map(y => ({
-                    name: `ปี ${y}`,
-                    type: 'line',
-                    smooth: true,
-                    symbol: 'none',
-                    lineStyle: { width: 2.5, color: baseColor },
-                    itemStyle: { color: baseColor },
-                    // ✨ 2. เพิ่ม Area Style พร้อมการไล่เฉดสี (Linear Gradient)
-                    areaStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: areaColorTop },
-                            { offset: 1, color: 'rgba(255, 255, 255, 0)' }
-                        ])
-                    },
-                    data: xDays.map(day => yearMap[y][day])
-                }));
+                let seriesData = years.map((y, idx) => {
+                    // เลือกสีจาก Palette ตามลำดับปี
+                    const colorSet = currentPalette[idx % currentPalette.length];
+                    return {
+                        name: `ปี ${y}`,
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'none',
+                        lineStyle: { width: 2.5, color: colorSet.line },
+                        itemStyle: { color: colorSet.line },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: colorSet.area },
+                                { offset: 1, color: 'rgba(255, 255, 255, 0)' }
+                            ])
+                        },
+                        data: xDays.map(day => yearMap[y][day])
+                    };
+                });
 
                 const option = {
                     tooltip: { 
                         trigger: 'axis', 
-                        axisPointer: { type: 'line' },
                         backgroundColor: 'rgba(255, 255, 255, 0.9)',
                         borderColor: '#e2e8f0'
                     },
                     legend: { data: years.map(y => `ปี ${y}`), bottom: 0, icon: 'circle' },
                     grid: { left: '3%', right: '4%', bottom: '15%', top: '10%', containLabel: true },
                     dataZoom: [{ type: 'inside' }, { type: 'slider', bottom: 25 }],
-                    xAxis: { 
-                        type: 'category', 
-                        boundaryGap: false, 
-                        data: xDays, 
-                        axisLabel: { color: '#64748b', fontSize: 10 } 
-                    },
-                    yAxis: { 
-                        type: 'value', 
-                        splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9' } } 
-                    },
+                    xAxis: { type: 'category', boundaryGap: false, data: xDays, axisLabel: { color: '#64748b', fontSize: 10 } },
+                    yAxis: { type: 'value', splitLine: { lineStyle: { type: 'dashed', color: '#f1f5f9' } } },
                     series: seriesData
                 };
                 
