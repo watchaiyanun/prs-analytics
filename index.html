@@ -146,6 +146,10 @@
     <span class="material-symbols-rounded outline text-[20px] group-hover:text-brand-600 transition-colors">view_in_ar</span>
     <span class="text-sm">แผนที่วิเคราะห์ 3 มิติ</span>
 </button>
+<button onclick="switchTab('sync3d')" id="nav-sync3d" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-50 hover:text-brand-600 text-left w-full group whitespace-nowrap">
+                <span class="material-symbols-rounded outline text-[20px] group-hover:text-brand-600 transition-colors">splitscreen</span>
+                <span class="text-sm">เปรียบเทียบ 3D คู่ขนาน</span>
+            </button>
             <button onclick="switchTab('ranking')" id="nav-ranking" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-50 hover:text-brand-600 text-left w-full group whitespace-nowrap">
                 <span class="material-symbols-rounded outline text-[20px] group-hover:text-brand-600 transition-colors">format_list_numbered</span>
                 <span class="text-sm">จัดอันดับข้อมูล (Ranking)</span>
@@ -1059,10 +1063,19 @@
         </div>
     </div>
 
-            <div class="flex gap-1 bg-slate-950/50 p-1 rounded-lg border border-white/5 mb-3">
-                <button onclick="Map3DController.setSeverityFilter('all')" id="btn-sev-all" class="flex-1 py-1.5 bg-brand-500/30 text-brand-400 text-[10px] font-bold rounded shadow-sm transition-all border border-brand-500/50">ทั้งหมด</button>
-                <button onclick="Map3DController.setSeverityFilter('dead')" id="btn-sev-dead" class="flex-1 py-1.5 text-slate-400 hover:text-red-400 text-[10px] font-bold rounded transition-all border border-transparent hover:bg-red-500/20">เสียชีวิต</button>
-                <button onclick="Map3DController.setSeverityFilter('inj')" id="btn-sev-inj" class="flex-1 py-1.5 text-slate-400 hover:text-orange-400 text-[10px] font-bold rounded transition-all border border-transparent hover:bg-orange-500/20">บาดเจ็บ</button>
+            <div class="mb-3 space-y-2">
+                <div>
+                    <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 block">กรองตามจังหวัด:</label>
+                    <select id="map3d-prov-filter" onchange="Map3DController.setProvinceFilter(this.value)" class="w-full bg-slate-950/80 text-brand-300 text-xs font-bold border border-brand-500/30 rounded-lg py-1.5 px-2 focus:ring-brand-500 cursor-pointer shadow-inner">
+                        <option value="all">📍 ทุกจังหวัด (ทั่วประเทศ)</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-1 bg-slate-950/50 p-1 rounded-lg border border-white/5">
+                    <button onclick="Map3DController.setSeverityFilter('all')" id="btn-sev-all" class="flex-1 py-1.5 bg-brand-500/30 text-brand-400 text-[10px] font-bold rounded shadow-sm transition-all border border-brand-500/50">ทั้งหมด</button>
+                    <button onclick="Map3DController.setSeverityFilter('dead')" id="btn-sev-dead" class="flex-1 py-1.5 text-slate-400 hover:text-red-400 text-[10px] font-bold rounded transition-all border border-transparent hover:bg-red-500/20">เสียชีวิต</button>
+                    <button onclick="Map3DController.setSeverityFilter('inj')" id="btn-sev-inj" class="flex-1 py-1.5 text-slate-400 hover:text-orange-400 text-[10px] font-bold rounded transition-all border border-transparent hover:bg-orange-500/20">บาดเจ็บ</button>
+                </div>
             </div>
 
             <div class="space-y-2 border-t border-white/5 pt-3">
@@ -1129,6 +1142,71 @@
     </div>
 
 </main>
+<main id="view-sync3d" class="view-section flex-col flex-1 relative bg-slate-950 overflow-hidden w-full">
+                
+                <div class="h-[72px] bg-slate-900 border-b border-white/10 flex items-center justify-between px-4 lg:px-6 shrink-0 z-20 shadow-lg">
+                    <h2 class="text-white font-bold flex items-center gap-2 text-sm lg:text-base">
+                        <span class="material-symbols-rounded text-brand-400">splitscreen</span> 
+                        Comparative 3D Sync <span class="hidden sm:inline text-slate-500 font-normal text-xs ml-2">| เลื่อนแผนที่ฝั่งใดฝั่งหนึ่ง อีกฝั่งจะหมุนตามอัตโนมัติ</span>
+                    </h2>
+                    
+                    <div class="flex gap-2 lg:gap-4 items-center">
+                        
+                        <div class="flex items-center gap-1.5 lg:gap-2 bg-slate-800/80 p-1.5 rounded-lg border border-purple-500/30">
+                            <span class="material-symbols-rounded text-purple-400 text-[14px]">map</span>
+                            <select id="sync-prov-filter" onchange="Sync3DController.updateData()" class="bg-slate-950 text-purple-300 text-xs font-bold border border-white/10 rounded-md py-1 px-1 lg:px-2 cursor-pointer w-28 lg:w-32 truncate">
+                                <option value="all">ทุกจังหวัด</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center bg-slate-950 rounded-lg border border-white/10 overflow-hidden">
+                            <button onclick="Sync3DController.setSeverity('all')" id="btn-sync-sev-all" class="px-2 py-1.5 bg-brand-500/30 text-brand-400 text-[10px] font-bold border-r border-white/10">ทั้งหมด</button>
+                            <button onclick="Sync3DController.setSeverity('dead')" id="btn-sync-sev-dead" class="px-2 py-1.5 text-slate-400 hover:bg-red-500/20 hover:text-red-400 text-[10px] font-bold border-r border-white/10">ตาย</button>
+                            <button onclick="Sync3DController.setSeverity('inj')" id="btn-sync-sev-inj" class="px-2 py-1.5 text-slate-400 hover:bg-orange-500/20 hover:text-orange-400 text-[10px] font-bold">เจ็บ</button>
+                        </div>
+
+                        <div class="flex items-center gap-1.5 lg:gap-2 bg-slate-800 p-1.5 rounded-lg border border-brand-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]">
+                            <span class="text-[9px] lg:text-[10px] text-brand-300 font-bold uppercase tracking-widest px-1 lg:px-2">จอซ้าย:</span>
+                            <select id="sync-filter-left" onchange="Sync3DController.updateData()" class="bg-slate-950 text-white text-xs font-bold border border-white/10 rounded-md py-1 px-1 lg:px-2 focus:ring-brand-500 cursor-pointer">
+                                <option value="2569">ปี 2569</option><option value="2568">ปี 2568</option><option value="2567" selected>ปี 2567</option><option value="2566">ปี 2566</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center gap-1.5 lg:gap-2 bg-slate-800 p-1.5 rounded-lg border border-orange-500/30 shadow-[0_0_10px_rgba(249,115,22,0.1)]">
+                            <span class="text-[9px] lg:text-[10px] text-orange-300 font-bold uppercase tracking-widest px-1 lg:px-2">จอขวา:</span>
+                            <select id="sync-filter-right" onchange="Sync3DController.updateData()" class="bg-slate-950 text-white text-xs font-bold border border-white/10 rounded-md py-1 px-1 lg:px-2 focus:ring-orange-500 cursor-pointer">
+                                <option value="2569">ปี 2569</option><option value="2568" selected>ปี 2568</option><option value="2567">ปี 2567</option><option value="2566">ปี 2566</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="flex-1 flex flex-col md:flex-row w-full relative">
+                    <div class="hidden md:block absolute left-1/2 top-0 bottom-0 w-1 bg-white/20 z-[50] cursor-col-resize shadow-[0_0_15px_rgba(0,0,0,0.8)] transform -translate-x-1/2 border-x border-slate-900/50"></div>
+                    
+                    <div class="flex-1 relative w-full h-full border-b md:border-b-0 md:border-r border-white/10 overflow-hidden">
+                        <div id="deck-canvas-left" class="absolute inset-0 w-full h-full z-0 bg-slate-950"></div>
+                        <div class="absolute top-4 left-4 z-[40] pointer-events-none">
+                            <div class="bg-slate-900/90 backdrop-blur-md border border-brand-500/30 px-4 py-2.5 rounded-xl shadow-xl flex flex-col">
+                                <h3 class="text-white font-bold text-sm flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-400"></span> <span id="sync-title-left">ข้อมูลปี 2567</span></h3>
+                                <p class="text-[11px] text-slate-400 mt-1" id="sync-stats-left">เกิดเหตุ: กำลังโหลด...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 relative w-full h-full overflow-hidden">
+                        <div id="deck-canvas-right" class="absolute inset-0 w-full h-full z-0 bg-slate-950"></div>
+                        <div class="absolute top-4 right-4 z-[40] pointer-events-none text-right">
+                            <div class="bg-slate-900/90 backdrop-blur-md border border-orange-500/30 px-4 py-2.5 rounded-xl shadow-xl flex flex-col items-end">
+                                <h3 class="text-white font-bold text-sm flex items-center justify-end gap-1.5"><span id="sync-title-right">ข้อมูลปี 2568</span> <span class="w-2 h-2 rounded-full bg-orange-400"></span></h3>
+                                <p class="text-[11px] text-slate-400 mt-1" id="sync-stats-right">เกิดเหตุ: กำลังโหลด...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </main>
         </div>
     </div>
 
@@ -2027,6 +2105,179 @@
                 }, 200); 
             }
         };
+
+// ==========================================
+// 🚀 MODULE: Sync3DController (แก้จอดำ + สมองกลวันที่สุดแกร่ง)
+// ==========================================
+const Sync3DController = {
+    deckLeft: null, 
+    deckRight: null, 
+    isInitialized: false,
+    severityFilterMode: 'all', 
+    
+    // 🌟 1. สร้างศูนย์กลางมุมมอง (ViewState) ป้องกัน WebGL ช็อตจอดำ
+    viewState: { longitude: 100.52, latitude: 13.75, zoom: 5.5, pitch: 45, bearing: 0 },
+
+    init() {
+        if (this.isInitialized) { this.updateData(); return; }
+        
+        const onViewStateChangeSync = ({viewState}) => { 
+            this.viewState = viewState;
+            if(this.deckLeft) this.deckLeft.setProps({viewState: this.viewState}); 
+            if(this.deckRight) this.deckRight.setProps({viewState: this.viewState}); 
+        };
+
+        // 🌟 2. ผูก viewState เข้ากับแผนที่ทั้ง 2 จอ
+        this.deckLeft = new deck.DeckGL({ 
+            container: 'deck-canvas-left', 
+            viewState: this.viewState, 
+            controller: { maxPitch: 60 }, 
+            useDevicePixels: true, 
+            onViewStateChange: onViewStateChangeSync, 
+            layers: [] 
+        });
+        
+        this.deckRight = new deck.DeckGL({ 
+            container: 'deck-canvas-right', 
+            viewState: this.viewState, 
+            controller: { maxPitch: 60 }, 
+            useDevicePixels: true, 
+            onViewStateChange: onViewStateChangeSync, 
+            layers: [] 
+        });
+
+        this.isInitialized = true;
+        setTimeout(() => this.updateData(), 300);
+    },
+
+    setSeverity(mode) {
+        this.severityFilterMode = mode;
+        const btnAll = document.getElementById('btn-sync-sev-all'); const btnDead = document.getElementById('btn-sync-sev-dead'); const btnInj = document.getElementById('btn-sync-sev-inj');
+        [btnAll, btnDead, btnInj].forEach(btn => { if(btn) btn.className = "px-2 py-1.5 text-slate-400 hover:bg-slate-800 text-[10px] font-bold border-r border-white/10"; });
+        if (mode === 'all' && btnAll) btnAll.className = "px-2 py-1.5 bg-brand-500/30 text-brand-400 text-[10px] font-bold border-r border-white/10";
+        if (mode === 'dead' && btnDead) btnDead.className = "px-2 py-1.5 bg-red-500/30 text-red-400 text-[10px] font-bold border-r border-white/10";
+        if (mode === 'inj' && btnInj) btnInj.className = "px-2 py-1.5 bg-orange-500/30 text-orange-400 text-[10px] font-bold";
+        this.updateData();
+    },
+
+    updateData() {
+        if (!AppState.mapData || AppState.mapData.length === 0) return;
+
+        const yearLeft = document.getElementById('sync-filter-left').value;
+        const yearRight = document.getElementById('sync-filter-right').value;
+        const targetProvElement = document.getElementById('sync-prov-filter');
+        const targetProv = targetProvElement ? targetProvElement.value : 'all';
+        
+        let dataLeft = []; let dataRight = []; let provSet = new Set();
+
+        AppState.mapData.forEach(d => {
+            const latRaw = d.lat || d.LAT || d.Lat || d.Latitude || d.Y || d.y || d.LATITUDE;
+            const lngRaw = d.lng || d.LON || d.Lon || d.Longitude || d.X || d.x || d.LONGITUDE;
+            const lat = parseFloat(latRaw); 
+            const lng = parseFloat(lngRaw);
+            
+            if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                let prov = d.province || d.จังหวัด || d.PROVINCE || d.Province || "";
+                if(prov) { prov = String(prov).replace('จ.', '').trim(); provSet.add(prov); }
+
+                // 🌟 3. สมองกลวันที่สุดแกร่ง (รับประกันข้อมูลไม่หาย)
+                let yBE = "";
+                let dateRaw = String(d.accident_date || d.DATE || d.Date || d.วันที่ || d.acc_date || "");
+                
+                if (dateRaw.match(/25\d{2}/)) {
+                    yBE = dateRaw.match(/25\d{2}/)[0];
+                } else if (dateRaw.match(/20\d{2}/)) {
+                    yBE = (parseInt(dateRaw.match(/20\d{2}/)[0]) + 543).toString();
+                } else {
+                    // ถ้าระบบหลังบ้านส่งวันที่แปลกๆ มา ให้เดาจากข้อความ
+                    if (dateRaw.includes('67') || dateRaw.includes('24')) yBE = '2567';
+                    else if (dateRaw.includes('68') || dateRaw.includes('25')) yBE = '2568';
+                    else if (dateRaw.includes('66') || dateRaw.includes('23')) yBE = '2566';
+                    else yBE = yearLeft; // ก๊อกสุดท้าย: ถ้าเดาไม่ออกเลย ให้ยัดใส่จอซ้ายไปเลย จะได้รู้ว่ามีจุด
+                }
+
+                if (targetProv !== 'all' && prov !== targetProv) return;
+
+                let d_count = parseInt(d.deaths || d.Total_Deaths || d.Dead || d['เสียชีวิต'] || 0);
+                if (isNaN(d_count) || d_count === 0) { if (parseInt(d.max_severity_score) === 10) d_count = 1; }
+                let i_count = parseInt(d.injuries || d.Total_Injuries || d.Injured || d['บาดเจ็บ'] || 0);
+                if (isNaN(i_count)) i_count = 0;
+
+                let isValidSeverity = false;
+                if (!this.severityFilterMode || this.severityFilterMode === 'all') isValidSeverity = true;
+                else if (this.severityFilterMode === 'dead') isValidSeverity = d_count > 0;
+                else if (this.severityFilterMode === 'inj') isValidSeverity = i_count > 0;
+
+                if(isValidSeverity) {
+                    const point = { position: [lng, lat], raw: d, d_count: d_count, i_count: i_count };
+                    if (yBE === yearLeft) dataLeft.push(point);
+                    if (yBE === yearRight) dataRight.push(point);
+                }
+            }
+        });
+
+        if (targetProvElement && targetProvElement.options.length <= 1) {
+            Array.from(provSet).sort().forEach(p => {
+                let opt = document.createElement('option'); opt.value = p; opt.text = `จ.${p}`;
+                targetProvElement.appendChild(opt);
+            });
+        }
+
+        if(document.getElementById('sync-stats-left')) document.getElementById('sync-stats-left').innerHTML = `ยอดรวม: <b class="text-white">${dataLeft.length.toLocaleString()}</b> จุด`;
+        if(document.getElementById('sync-stats-right')) document.getElementById('sync-stats-right').innerHTML = `ยอดรวม: <b class="text-white">${dataRight.length.toLocaleString()}</b> จุด`;
+        
+        let colorLeft = [[1, 152, 189], [73, 227, 206], [216, 254, 181], [254, 237, 177], [254, 173, 84], [209, 55, 78]];
+        let colorRight = [[255,237,213], [253,186,116], [249,115,22], [239,68,68], [185,28,28], [127,29,29]];
+        
+        if(this.severityFilterMode === 'dead') { colorLeft = colorRight; }
+        if(this.severityFilterMode === 'inj') { colorLeft = [[254,240,138], [253,224,71], [250,204,21], [234,179,8], [202,138,4], [161,98,7]]; colorRight = colorLeft; }
+
+        this.renderMap(this.deckLeft, dataLeft, colorLeft, 'left');
+        this.renderMap(this.deckRight, dataRight, colorRight, 'right');
+    },
+
+    renderMap(deckInstance, data, colorRange, side) {
+        if(!deckInstance) return;
+        
+        const getWeightFunc = p => {
+            if (this.severityFilterMode === 'dead') return p.d_count;
+            if (this.severityFilterMode === 'inj') return p.i_count;
+            return 1;
+        };
+
+        const layers = [
+            new deck.TileLayer({ 
+                id: `base-map-sync-${side}`, 
+                data: 'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', 
+                minZoom: 0, maxZoom: 19, tileSize: 256, 
+                renderSubLayers: props => new deck.BitmapLayer(props, { data: null, image: props.data, bounds: [props.tile.bbox.west, props.tile.bbox.south, props.tile.bbox.east, props.tile.bbox.north] }) 
+            }),
+            new deck.HexagonLayer({ 
+                id: `hexagon-sync-${side}`, 
+                data: data, 
+                getPosition: d => d.position, 
+                getElevationWeight: getWeightFunc, 
+                getColorWeight: getWeightFunc, 
+                elevationAggregation: 'SUM', 
+                colorAggregation: 'SUM', 
+                radius: 2000, 
+                elevationScale: 100, 
+                extruded: true, 
+                coverage: 0.85, 
+                colorRange: colorRange, 
+                transitions: { elevationScale: 300 },
+                updateTriggers: {
+                    getElevationWeight: [this.severityFilterMode],
+                    getColorWeight: [this.severityFilterMode]
+                }
+            })
+        ];
+        
+        // 🌟 4. สั่งวาดชั้นแผนที่ลงไป
+        deckInstance.setProps({ layers: layers });
+    }
+};
+
         const UIController = {
             toggleSidebar() {
                 const sidebar = document.getElementById('main-sidebar');
@@ -3747,6 +3998,10 @@ const Map3DController = {
         this.render();
     },
 
+setProvinceFilter(prov) {
+        this.provinceFilterMode = prov;
+        this.render();
+    },
     setSeverityFilter(mode) {
         this.severityFilterMode = mode;
         const btnAll = document.getElementById('btn-sev-all');
@@ -3794,88 +4049,93 @@ const Map3DController = {
     },
 
     prepareData() {
-        const points = []; let minTs = Infinity; let maxTs = -Infinity;
+        const points = []; 
+        let provSet = new Set();
+        
+        // 🌟 ใช้ Logic เดียวกับหน้าแผนที่ความเสี่ยง: มีพิกัด = แสดงผล
         if (AppState.mapData && AppState.mapData.length > 0) {
             AppState.mapData.forEach(d => {
-                const lat = d.LAT || d.Lat || d.lat || d.Latitude || d.latitude || d.Y || d.y;
-                const lng = d.LON || d.Lon || d.lon || d.LNG || d.Lng || d.lng || d.Longitude || d.longitude || d.X || d.x;
-                if (lat !== undefined && lng !== undefined && lat !== "" && lng !== "") {
-                    const parsedLat = parseFloat(lat); const parsedLng = parseFloat(lng);
-                    if (!isNaN(parsedLat) && !isNaN(parsedLng) && parsedLat !== 0 && parsedLng !== 0) {
-                        let rawDate = null;
-                        const keys = Object.keys(d);
-                        for (let k of keys) { let kLow = k.toLowerCase(); if (kLow.includes('date') || kLow.includes('วันที่') || kLow.includes('เกิดเหตุ') || kLow.includes('acc_')) { rawDate = d[k]; break; } }
-                        let dateObj = this.parseDateToObj(rawDate);
-                        let ts = null;
-                        if (dateObj && !isNaN(dateObj.getTime())) { ts = dateObj.getTime(); if (ts < minTs) minTs = ts; if (ts > maxTs) maxTs = ts; }
-                        points.push({ position: [parsedLng, parsedLat], timestamp: ts, raw: d });
+                // ดึงพิกัดแบบครอบจักรวาล (เหมือนหน้า Risk Map)
+                const lat = parseFloat(d.lat || d.LAT || d.Lat || d.Latitude || d.Y);
+                const lng = parseFloat(d.lng || d.LON || d.Lon || d.Longitude || d.X);
+                
+                if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                    // เรื่องจังหวัด
+                    let prov = d.province || d.จังหวัด || d.PROVINCE || "";
+                    if (prov) { 
+                        prov = String(prov).replace('จ.', '').trim(); 
+                        provSet.add(prov); 
                     }
+
+                    // เรื่องวันที่ (ถ้ามีก็ใช้ ถ้าไม่มีก็ไม่เป็นไร จุดไม่หายแน่นอน)
+                    let ts = Date.now(); 
+                    try {
+                        const dateRaw = d.accident_date || d.DATE || d.Date || d.วันที่;
+                        if (dateRaw && typeof parseStrictDateTime === 'function') {
+                            const dt = parseStrictDateTime(dateRaw, d.accident_time || "12:00");
+                            if (dt.isValidDate) ts = new Date(dt.yearAD, dt.month-1, dt.day).getTime();
+                        }
+                    } catch(e) {}
+
+                    points.push({
+                        position: [lng, lat],
+                        timestamp: ts,
+                        prov: prov,
+                        raw: d
+                    });
                 }
             });
         }
+        
         this.pointsData = points;
-        if (minTs !== Infinity && maxTs !== -Infinity) {
-            let dMin = new Date(minTs); let dMax = new Date(maxTs);
-            this.timeState.minTime = new Date(dMin.getFullYear(), dMin.getMonth(), dMin.getDate(), 0, 0, 0).getTime();
-            this.timeState.maxTime = new Date(dMax.getFullYear(), dMax.getMonth(), dMax.getDate(), 23, 59, 59).getTime();
-            this.timeState.startFilter = this.timeState.minTime; this.timeState.endFilter = this.timeState.maxTime; this.timeState.currentPlayTime = this.timeState.maxTime; 
+        
+        // อัปเดตรายชื่อจังหวัดใน Dropdown
+        const provDropdown = document.getElementById('map3d-prov-filter');
+        if (provDropdown && provDropdown.options.length <= 1) {
+            Array.from(provSet).sort().forEach(p => {
+                let opt = document.createElement('option'); opt.value = p; opt.text = `จ.${p}`;
+                provDropdown.appendChild(opt);
+            });
         }
+        
+        // เซตช่วงเวลาให้ครอบคลุม (ถ้าไม่มีข้อมูลวันที่ ให้โชว์ทั้งหมด)
+        this.timeState.minTime = 0;
+        this.timeState.maxTime = Date.now() + 86400000;
+        this.timeState.startFilter = 0;
+        this.timeState.endFilter = this.timeState.maxTime;
     },
 
     render(focusData = null, targetInfo = null) {
         if (!this.deck) return;
-        
         let baseData = focusData ? focusData : this.pointsData;
+        
         if (this.isTimelineMode && this.timeState.startFilter > 0) { 
             baseData = baseData.filter(p => p.timestamp && p.timestamp >= this.timeState.startFilter && p.timestamp <= this.timeState.currentPlayTime); 
         }
 
+        // 🌟 เพิ่มคำสั่งกรองตามจังหวัด
+        if (this.provinceFilterMode && this.provinceFilterMode !== 'all') {
+            baseData = baseData.filter(p => p.prov === this.provinceFilterMode);
+        }
+
+        // กรองตามความรุนแรง
         let activeData = baseData;
         if (this.severityFilterMode === 'dead') {
-            activeData = baseData.filter(p => {
-                let d = parseInt(p.raw.deaths || p.raw.Total_Deaths || p.raw.Dead || p.raw['ตาย'] || p.raw['เสียชีวิต']) || 0;
-                if (d === 0 && parseInt(p.raw.max_severity_score) === 10) d = 1;
-                return d > 0;
-            });
+            activeData = baseData.filter(p => (parseInt(p.raw.deaths) || (parseInt(p.raw.max_severity_score) === 10 ? 1 : 0)) > 0);
         } else if (this.severityFilterMode === 'inj') {
-            activeData = baseData.filter(p => {
-                let i = parseInt(p.raw.injuries || p.raw.Total_Injuries || p.raw.Injured || p.raw['บาดเจ็บ'] || p.raw['เจ็บ']) || 0;
-                return i > 0;
-            });
+            activeData = baseData.filter(p => (parseInt(p.raw.injuries) || 0) > 0);
         }
 
         const getWeightFunc = p => {
-            if (this.severityFilterMode === 'dead') {
-                let d = parseInt(p.raw.deaths || p.raw.Total_Deaths || p.raw.Dead || p.raw['ตาย'] || p.raw['เสียชีวิต']) || 0;
-                if (d === 0 && parseInt(p.raw.max_severity_score) === 10) d = 1;
-                return d;
-            } else if (this.severityFilterMode === 'inj') {
-                return parseInt(p.raw.injuries || p.raw.Total_Injuries || p.raw.Injured || p.raw['บาดเจ็บ'] || p.raw['เจ็บ']) || 0;
-            }
+            if (this.severityFilterMode === 'dead') return parseInt(p.raw.deaths) || (parseInt(p.raw.max_severity_score) === 10 ? 1 : 0);
+            if (this.severityFilterMode === 'inj') return parseInt(p.raw.injuries) || 0;
             return 1;
         };
 
         const layers = [
             new deck.TileLayer({ id: 'base-map-3d', data: 'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', minZoom: 0, maxZoom: 19, tileSize: 256, renderSubLayers: props => new deck.BitmapLayer(props, { data: null, image: props.data, bounds: [props.tile.bbox.west, props.tile.bbox.south, props.tile.bbox.east, props.tile.bbox.north] }) }),
             new deck.ScatterplotLayer({ id: 'actual-accident-points', data: activeData, getPosition: d => d.position, getFillColor: [255, 60, 60, 200], getRadius: 10, radiusMinPixels: 2, radiusMaxPixels: 8 }),
-            new deck.ScatterplotLayer({ id: 'target-lock-ring', data: targetInfo ? [targetInfo] : [], getPosition: d => [d.lng, d.lat], getFillColor: [255, 0, 0, 0], getLineColor: [255, 50, 50, 255], getLineWidth: 4, stroked: true, filled: false, getRadius: 500, radiusMinPixels: 30, radiusMaxPixels: 100, lineWidthMinPixels: 2 }),
-            
-            new deck.HexagonLayer({ 
-                id: 'hexagon-3d', 
-                data: activeData, 
-                getPosition: d => d.position, 
-                getElevationWeight: getWeightFunc,
-                getColorWeight: getWeightFunc,
-                elevationAggregation: 'SUM',
-                colorAggregation: 'SUM',
-                radius: 2000, 
-                elevationScale: 100, 
-                extruded: true, 
-                pickable: true,  
-                autoHighlight: true, 
-                highlightColor: [255, 255, 255, 120],
-                opacity: focusData ? 0.8 : 0.45, 
-                coverage: 0.85, 
+            new deck.HexagonLayer({ id: 'hexagon-3d', data: activeData, getPosition: d => d.position, getElevationWeight: getWeightFunc, getColorWeight: getWeightFunc, elevationAggregation: 'SUM', colorAggregation: 'SUM', radius: 2000, elevationScale: 100, extruded: true, pickable: true, autoHighlight: true, highlightColor: [255, 255, 255, 120], opacity: focusData ? 0.8 : 0.45, coverage: 0.85, 
                 colorRange: this.severityFilterMode === 'dead' ? [[255,237,213], [253,186,116], [249,115,22], [239,68,68], [185,28,28], [127,29,29]] : 
                             this.severityFilterMode === 'inj' ? [[254,240,138], [253,224,71], [250,204,21], [234,179,8], [202,138,4], [161,98,7]] : 
                             [[1, 152, 189], [73, 227, 206], [216, 254, 181], [254, 237, 177], [254, 173, 84], [209, 55, 78]], 
@@ -3991,38 +4251,21 @@ const Map3DController = {
 // แก้ไขฟังก์ชัน switchTab เดิมให้รองรับการสั่งงาน 3D
 const originalSwitchTab = UIController.switchTab;
 UIController.switchTab = function(tabId) {
-    // 1. เรียกการทำงานเดิม (สลับ Tab)
     originalSwitchTab.call(this, tabId);
     
-    // 2. 🌟 เพิ่มคำสั่งปิดแผง Timeline ทันทีเมื่อเปลี่ยน Tab
+    // ปิดแผง Timeline เมื่อเปลี่ยนหน้า
     const timelinePanel = document.getElementById('timeline-panel');
-    const timelineBtn = document.getElementById('btn-timeline-toggle');
-    
-    if (timelinePanel) {
-        // ซ่อนแผงลงด้านล่าง
-        timelinePanel.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
-        // หยุดการเล่นแอนิเมชัน (ถ้ามี)
-        if (typeof Map3DController !== 'undefined') {
-            Map3DController.isTimelineMode = false;
-            Map3DController.pause(); // หยุดเสียงหรือ Interval แอนิเมชัน
-        }
-    }
-    
-    // คืนค่าสีปุ่มเปิดโหมดให้เป็นปกติ
-    if (timelineBtn) {
-        timelineBtn.classList.replace('bg-purple-500/50', 'bg-purple-500/20');
-        timelineBtn.classList.replace('text-white', 'text-purple-300');
+    if (timelinePanel) timelinePanel.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+
+    // เรียกใช้งานแผนที่ตาม Tab ที่เลือก
+    if (tabId === 'map3d' && AppState.mapData.length > 0) {
+        setTimeout(() => { if(typeof Map3DController !== 'undefined') Map3DController.init(); }, 300);
     }
 
-    // 3. ถ้าสลับมาที่หน้า 3D ให้สั่ง Init แผนที่ใหม่ (เผื่อค้าง)
-    if (tabId === 'map3d') {
-        setTimeout(() => {
-            if (typeof Map3DController !== 'undefined') {
-                Map3DController.init();
-            }
-        }, 300);
+    if (tabId === 'sync3d' && AppState.mapData.length > 0) {
+        setTimeout(() => { if(typeof Sync3DController !== 'undefined') Sync3DController.init(); }, 300);
     }
 };
-    </script>
+</script>
 </body>
 </html>
